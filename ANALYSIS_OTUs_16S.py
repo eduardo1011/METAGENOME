@@ -1,18 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
-
-
-
-color = '#39393c' # #38383d #  '#eeeeee'   #39393c
-Javascript("""
-let div = document.getElementById('color');
-document.body.style.backgroundColor = "{}";
-""".format(color))
-
-
-# In[25]:
 
 
 PREFIJO1 = 'OTU'
