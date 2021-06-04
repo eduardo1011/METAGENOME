@@ -4,8 +4,6 @@
 # In[1]:
 
 
-from IPython.core.display import display, HTML, Javascript
-display(HTML("<style>.container { width:97.5% !important; }</style>"))
 
 color = '#39393c' # #38383d #  '#eeeeee'   #39393c
 Javascript("""
