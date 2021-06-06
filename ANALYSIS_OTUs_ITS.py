@@ -392,14 +392,15 @@ limite_reads = widgets.SelectionSlider(options=range(0, 200),value=2,description
 confirmacion = widgets.ToggleButtons(options=['False', 'True'])
 confirmacion.style.button_width = '50px'
 
-conteo_inicial = VBox([widgets.HTML('<font color = grey> <b style="font-size:0.6vw">'+PREFIJO1+' : '+str(len(set(ASV_Full_Taxonomy.Entry.unique())))+'</b>'),
-                       widgets.HTML('<font color = grey> <b style="font-size:0.6vw">Genus : '+str(len(set(ASV_Full_Taxonomy.Genus.unique())))+'</b>'),
-                       widgets.HTML('<font color = grey> <b style="font-size:0.6vw">Species : '+str(len(set(ASV_Full_Taxonomy.Species.unique())))+'</b>')
-                       ])
-conteo_inicial_box = Box(children=[conteo_inicial], layout=Layout(display='flex', flex_flow='column', align_items='stretch', border='1px solid grey',
-                                                                  width='120px', height=str(int(len(conteo_inicial.children) * 34))+'px'))
 
 def box1(umbral_tax_genus, umbral_tax_specie, limite_reads):
+
+    conteo_inicial = VBox([widgets.HTML('<font color = grey> <b style="font-size:0.6vw">'+PREFIJO1+' : '+str(len(set(ASV_Full_Taxonomy.Entry.unique())))+'</b>'),
+                        widgets.HTML('<font color = grey> <b style="font-size:0.6vw">Genus : '+str(len(set(ASV_Full_Taxonomy.Genus.unique())))+'</b>'),
+                        widgets.HTML('<font color = grey> <b style="font-size:0.6vw">Species : '+str(len(set(ASV_Full_Taxonomy.Species.unique())))+'</b>')
+                        ])
+    conteo_inicial_box = Box(children=[conteo_inicial], layout=Layout(display='flex', flex_flow='column', align_items='stretch', border='1px solid grey',
+                                                                    width='120px', height=str(int(len(conteo_inicial.children) * 34))+'px'))
     
     Full_Taxonomy = ASV_Full_Taxonomy[ASV_Full_Taxonomy.G_Score >= umbral_tax_genus] # threshold of 0.8 at the genus level
     Full_Taxonomy = Full_Taxonomy[Full_Taxonomy.S_Score >= umbral_tax_specie] # threshold of 0.5 at the species level
@@ -439,7 +440,7 @@ def box1(umbral_tax_genus, umbral_tax_specie, limite_reads):
     
     #display(HBox([pro, blanca, resultado_box]))
     
-    display(HBox([resultado_box, blanca, ayuda0, VBox([procesar_button, procesar_output])]))
+    display(HBox([conteo_inicial_box, blanca, resultado_box, blanca, ayuda0, VBox([procesar_button, procesar_output])]))
     
     
 
@@ -486,7 +487,7 @@ OUT1 = widgets.interactive_output(box1, {'umbral_tax_genus':umbral_tax_genus, 'u
 
 
 threshold = HBox([widgets.HTML('<font color = black> <i class="fa fa-filter fa-2x" aria-hidden="true"></i> <h style="font-size:0.7vw">Taxonomic threshold:</h>'),
-                  blanca, conteo_inicial_box, VBox([umbral_tax_genus, umbral_tax_specie, limite_reads]), OUT1])
+                  VBox([umbral_tax_genus, umbral_tax_specie, limite_reads]), OUT1])
 
 
 
