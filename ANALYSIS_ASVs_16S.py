@@ -1235,7 +1235,7 @@ def button_clicked(b):
         
         
         items_save_1 = VBox([HBox([widgets.HTML('<font color = grey> <b style="font-size:0.7vw">SAVE CHART: </b>'), blanca, filename_plot]),
-                             HBox([blanca, widgets.Label('Charts format:'), png1, jpeg1, svg1, pdf1]),
+                             HBox([blanca, widgets.Label('Formats:'), png1, jpeg1, svg1, pdf1]),
                      HBox([blanca, widgets.Label('Chart parameters:'), filename, params])])
         items_save_1_box = Box(children=[items_save_1], layout=Layout(border='1px solid gainsboro', width='410px', height=str(int(len(items_save_1.children) * 34))+'px'))
         
@@ -2247,7 +2247,7 @@ def button_clicked(b):
         items_axis_1_box = Box(children=[items_axis_1], layout=Layout(border='1px solid gainsboro', width='410px', height=str(int(len(items_axis_1.children) * 31))+'px'))
         
         items_save_1 = VBox([HBox([widgets.HTML('<font color = grey> <b style="font-size:0.7vw">SAVE CHART: </b>'), blanca, filename_plot]),
-                             HBox([blanca, widgets.Label('Charts format:'), png1, jpeg1, svg1, pdf1]),
+                             HBox([blanca, widgets.Label('Formats:'), png1, jpeg1, svg1, pdf1]),
                      HBox([blanca, widgets.Label('Chart parameters:'), filename, params])])
         items_save_1_box = Box(children=[items_save_1], layout=Layout(border='1px solid gainsboro', width='410px', height=str(int(len(items_save_1.children) * 34))+'px'))
         
@@ -2979,7 +2979,7 @@ def button_clicked(b):
             
             #------------------------------------
             items_save_1 = VBox([HBox([widgets.HTML('<font color = grey> <b style="font-size:0.7vw">SAVE CHART: </b>'), blanca, filename_plot]),
-                                 HBox([blanca, widgets.Label('Charts format:'), png1, jpeg1, svg1, pdf1]),
+                                 HBox([blanca, widgets.Label('Formats:'), png1, jpeg1, svg1, pdf1]),
                          HBox([blanca, widgets.Label('Chart parameters:'), filename, params])])
             items_save_1_box = Box(children=[items_save_1], layout=Layout(border='1px solid gainsboro', width='410px', height=str(int(len(items_save_1.children) * 34))+'px'))
             
@@ -5571,7 +5571,7 @@ def button_clicked(b):
             
             
             items_save_1 = VBox([HBox([widgets.HTML('<font color = grey> <b style="font-size:0.7vw">SAVE CHART: </b>'), blanca, filename_plot]),
-                                 HBox([blanca, widgets.Label('Charts format:'), png1, jpeg1, svg1, pdf1]),
+                                 HBox([blanca, widgets.Label('Formats:'), png1, jpeg1, svg1, pdf1]),
                          HBox([blanca, widgets.Label('Chart parameters:'), filename, params])])
             items_save_1_box = Box(children=[items_save_1], layout=Layout(border='1px solid gainsboro', width='410px', height=str(int(len(items_save_1.children) * 34))+'px'))
             
@@ -7979,7 +7979,7 @@ def button_clicked(b):
                         #------
                         
                         items_save_1 = VBox([HBox([widgets.HTML('<font color = grey> <b style="font-size:0.7vw">SAVE CHART: </b>'), blanca, filename_plot]),
-                                             HBox([blanca, widgets.Label('Charts format:'), png1, jpeg1, svg1, pdf1]),
+                                             HBox([blanca, widgets.Label('Formats:'), png1, jpeg1, svg1, pdf1]),
                                      HBox([blanca, widgets.Label('Chart parameters:'), filename, params])])
                         items_save_1_box = Box(children=[items_save_1], layout=Layout(border='1px solid gainsboro', width='410px', height=str(int(len(items_save_1.children) * 34))+'px'))
                         
