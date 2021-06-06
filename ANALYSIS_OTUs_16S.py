@@ -616,6 +616,22 @@ def box1(tipo_bd):
 
 
                 NCBI_RDP_SILVA_SUMMARY.to_csv('tablas/OTUs_NCBI_RDP_SILVA_SUMMARY.txt',index = None, sep = '\t')
+                
+                Full_Taxonomy.to_csv('tablas/OTU_Full_Taxonomy_Threshold.txt', sep = '\t', index = None)
+                datasets = []
+                for m in name_sample:
+                    df2 = Full_Taxonomy[category_names+[m]][Full_Taxonomy[category_names+[m]][m] >= COUNTS_THRESDHOLD].sort_values(by =m,ascending=False).reset_index(drop=True)
+                    df2 = df2[[m]+category_names]
+                    cuentas = df2[m].sum()
+                    df2['Ratio'] = (df2[m] / cuentas) * 100
+                    df2 = df2.rename(columns={m: 'Counts'})
+                    df2.insert(loc = 0, column='Sample', value=[m]*len(df2))
+                    datasets.append(df2)
+                DataSets = pd.concat(datasets)
+                """
+                Dataframe generado con datos para mostrar con el entorno interactivo de Krona
+                """
+                DataSets[['Sample', 'Counts', 'Ratio'] + category_names].to_csv('tablas/OTU_Full_Taxonomy_for_KRONA.txt',index = None, sep = '\t', header = None)
 
 
                 #display(resultado_box)
