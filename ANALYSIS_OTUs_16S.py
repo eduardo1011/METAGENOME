@@ -9,7 +9,7 @@ PREFIJO3 = 'otu'
 PREFIJO4 = 'otus'
 
 
-# In[2]:
+
 
 
 import subprocess, warnings, os, shutil, re, pandas
@@ -35,13 +35,13 @@ import seaborn as sns
 from matplotlib.colors import to_rgba_array, to_rgba, to_hex, to_rgb
 
 
-# In[3]:
+
 
 
 # formatos de imagen= eps, jpeg, jpg, pdf, pgf, png, ps, raw, rgba, svg, svgz, tif, tiff
 
 
-# In[4]:
+
 
 
 class HyperlinkManager:
@@ -81,7 +81,7 @@ class HyperlinkManager:
                 return
 
 
-# In[5]:
+
 
 
 os.makedirs('plots_otu',exist_ok=True)
@@ -93,13 +93,13 @@ os.makedirs('plots_otu/taxonomy',exist_ok=True)
 os.makedirs('plots_otu/beta_diversity',exist_ok=True)
 
 
-# In[ ]:
 
 
 
 
 
-# In[6]:
+
+
 
 
 import matplotlib as mpl
@@ -148,14 +148,14 @@ qualitative_colors = {'Pastel1':9,
                       'tab20c':20}
 
 
-# In[7]:
+
 
 
 column_scores = ['K_Score', 'P_Score', 'C_Score', 'O_Score', 'F_Score', 'G_Score', 'S_Score']
 category_names = ['Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Genus', 'Species']
 
 
-# In[8]:
+
 
 
 metadata = pd.read_csv('METADATA.txt', sep = '\t')
@@ -164,32 +164,32 @@ metadata = metadata[metadata['Name Sample'].str.contains('ITS') == False]
 metadata = metadata.sort_values(by =['Name Sample'],ascending=True).reset_index(drop=True)
 
 
-# In[ ]:
 
 
 
 
 
-# In[9]:
+
+
 
 
 SraRunTable = pd.read_csv('SraRunTable.txt', sep = ',')[['Sample Name', 'BioSample', 'Experiment']]
 sample_BioSample = dict(zip(SraRunTable['Sample Name'], SraRunTable['BioSample']))
 
 
-# In[ ]:
 
 
 
 
 
-# In[10]:
+
+
 
 
 VARIABLE_KIT = 'Genomic DNA kit'
 
 
-# In[11]:
+
 
 
 DNPowerSoil = metadata[metadata[VARIABLE_KIT] == 'DNPowerSoil']['Name Sample'].tolist()
@@ -197,7 +197,7 @@ DNMicrobial = metadata[metadata[VARIABLE_KIT] == 'DNMicrobial']['Name Sample'].t
 name_sample = metadata['Name Sample'].tolist()
 
 
-# In[12]:
+
 
 
 variables = ['Coffee Variety', 'Cultivation', 'Postharvest Processing', VARIABLE_KIT,
@@ -205,7 +205,7 @@ variables = ['Coffee Variety', 'Cultivation', 'Postharvest Processing', VARIABLE
 variables = list(reversed(list(dict(OrderedDict(Counter({i : len(i) for i in variables}).most_common())).keys())))
 
 
-# In[13]:
+
 
 
 correspondencia_sam_vars = {}
@@ -215,13 +215,13 @@ for i, row in metadata[['Name Sample'] + variables].iterrows():
                                                     'Drying Time (Days)':row['Drying Time (Days)'], 'Postharvest Processing':row['Postharvest Processing']}
 
 
-# In[ ]:
 
 
 
 
 
-# In[14]:
+
+
 
 
 name_code = dict(zip(metadata['Name Sample'], metadata['Code']))
@@ -230,13 +230,13 @@ code_name = dict(zip(metadata['Code'], metadata['Name Sample']))
 code2_name = dict(zip(metadata['Code2'], metadata['Name Sample']))
 
 
-# In[15]:
+
 
 
 KITS = {'Both kits' : name_sample}
 
 
-# In[16]:
+
 
 
 for i in metadata[VARIABLE_KIT].unique():
@@ -244,13 +244,13 @@ for i in metadata[VARIABLE_KIT].unique():
     KITS.update({i : lista})
 
 
-# In[ ]:
 
 
 
 
 
-# In[17]:
+
+
 
 
 """
@@ -269,13 +269,13 @@ def log_binomial2(n,k):
         return (log_fac2(k+1,n)-log_fac2(2,n-k))
 
 
-# In[ ]:
 
 
 
 
 
-# In[18]:
+
+
 
 
 marker_dict = ['o', 'v', '^', '<', '>', 's', 'p', 'H', '*', 'D']
@@ -286,21 +286,41 @@ for i in range(20):
     n += 0.5
 
 
-# In[19]:
 
 
-ASV_Full_Taxonomy = pd.read_csv('tablas/OTU_Full_Taxonomy.txt', sep = '\t')
+
 ASV_counts = pd.read_csv('clustering/OTU_counts.txt', sep = '\t')
-ASV_Full_Taxonomy = ASV_Full_Taxonomy.merge(ASV_counts, on = 'Entry', how = 'left')
 
 
-# In[ ]:
+# Selections
+Columnas = [0, 5, 7, 8, 10, 11, 13, 14, 16, 17, 19, 20, 22, 23, 25]
+Nombres = ['Entry', 'Kingdom', 'K_Score', 'Phylum', 'P_Score', 'Class', 'C_Score',
+           'Order', 'O_Score', 'Family', 'F_Score', 'Genus', 'G_Score', 'Species', 'S_Score']
+column_scores = ['K_Score', 'P_Score', 'C_Score', 'O_Score', 'F_Score', 'G_Score', 'S_Score']
+category_names = ['Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Genus', 'Species']
+lin_scores = dict(zip(category_names, column_scores))
+scores_lin = dict(zip(column_scores, category_names))
+otu_classif, otu = ['OTU_vs_NCBI_classif', 'OTU_vs_RDP_classif', 'OTU_vs_SILVA_classif'], 'OTU'
 
 
-
-
-
-# In[20]:
+NCBI = {}
+RDP = {}
+SILVA = {}
+for _clas in otu_classif:
+    df = pd.read_csv('tablas/'+_clas+'.txt', sep = '\t', header = None)
+    df = df[Columnas]
+    df.columns = Nombres
+    df = df[df.Species.str.contains('virus|_strain') == False]
+    if 'NCBI' == _clas.split('_')[2]:
+        for e, i in enumerate(df['Entry']):
+            NCBI[i] = list(df.iloc[e].values[1:])
+    if 'RDP' == _clas.split('_')[2]:
+        for e, i in enumerate(df['Entry']):
+            RDP[i] = list(df.iloc[e].values[1:])
+    if 'SILVA' == _clas.split('_')[2]:
+        for e, i in enumerate(df['Entry']):
+            SILVA[i] = list(df.iloc[e].values[1:])
+colnames = df.columns[1:].tolist()
 
 
 help0_button = widgets.Button(description="Help", icon = 'fa-question-circle', layout=Layout(width='65px'))
@@ -372,19 +392,27 @@ help0_button.on_click(button_clicked)
 ayuda0 = HBox([help0_button, help0_button_output])
 
 
-# In[29]:
+
 
 
 blanca = widgets.Button(layout=Layout(width='10px', height='25px'), disabled=True)
 blanca.style.button_color = 'white'
 
-umbral_tax_genus = widgets.SelectionSlider(options=np.round(np.linspace(0, 1, 11), 2),value=0.5,description='Genus:',disabled=False,
+progress = widgets.HTML()
+
+tipo_bd = widgets.ToggleButtons(options= ['NCBI', 'RDP', 'SILVA', 'MERGE ALL DBs'], value = 'NCBI', button_style = '') # este es solo para 16S
+tipo_bd.style.button_width = '150px'
+tipo_bd.style.font_weight = 'bold'
+
+tipo_bd_box = Box(children=[VBox([tipo_bd])], layout=Layout(border='1px solid silver', width='160px', height='120px'))
+
+umbral_tax_genus = widgets.SelectionSlider(options=np.round(np.linspace(0, 1, 11), 2),value=0.5,description='Genus >=:',disabled=False,
                                 continuous_update=False,orientation='horizontal',readout=True,
                                    layout=Layout(width='300px', height='25px'))
-umbral_tax_specie = widgets.SelectionSlider(options=np.round(np.linspace(0, 1, 11), 2),value=0.5,description='Species:',disabled=False,
+umbral_tax_specie = widgets.SelectionSlider(options=np.round(np.linspace(0, 1, 11), 2),value=0.1,description='Species >=:',disabled=False,
                                 continuous_update=False,orientation='horizontal',readout=True,
                                    layout=Layout(width='300px', height='25px'))
-limite_reads = widgets.SelectionSlider(options=range(0, 200),value=2,description='Reads >=:',disabled=False,
+limite_reads = widgets.SelectionSlider(options=range(0, 201),value=2,description='Reads >=:',disabled=False,
                                 continuous_update=False,orientation='horizontal',readout=True,
                                    layout=Layout(width='300px', height='25px'))
 
@@ -392,110 +420,247 @@ limite_reads = widgets.SelectionSlider(options=range(0, 200),value=2,description
 confirmacion = widgets.ToggleButtons(options=['False', 'True'])
 confirmacion.style.button_width = '50px'
 
-conteo_inicial = VBox([widgets.HTML('<font color = grey> <b style="font-size:0.6vw">'+PREFIJO1+' : '+str(len(set(ASV_Full_Taxonomy.Entry.unique())))+'</b>'),
-                       widgets.HTML('<font color = grey> <b style="font-size:0.6vw">Genus : '+str(len(set(ASV_Full_Taxonomy.Genus.unique())))+'</b>'),
-                       widgets.HTML('<font color = grey> <b style="font-size:0.6vw">Species : '+str(len(set(ASV_Full_Taxonomy.Species.unique())))+'</b>')
-                       ])
-conteo_inicial_box = Box(children=[conteo_inicial], layout=Layout(display='flex', flex_flow='column', align_items='stretch', border='1px solid grey',
-                                                                  width='120px', height=str(int(len(conteo_inicial.children) * 34))+'px'))
-
-def box1(umbral_tax_genus, umbral_tax_specie, limite_reads):
-    
-    Full_Taxonomy = ASV_Full_Taxonomy[ASV_Full_Taxonomy.G_Score >= umbral_tax_genus] # threshold of 0.8 at the genus level
-    Full_Taxonomy = Full_Taxonomy[Full_Taxonomy.S_Score >= umbral_tax_specie] # threshold of 0.5 at the species level
-    
-    COUNTS_THRESDHOLD = limite_reads
-    filtrados = {i : Full_Taxonomy[['Entry', i]].values[Full_Taxonomy[['Entry', i]].values[:, 1] >= COUNTS_THRESDHOLD] for i in name_sample}
-    frames = [DataFrame(filtrados[i].tolist(), columns = ['Entry', i]) for i in filtrados]
-    NCBI_RDP_SILVA_SUMMARY = reduce(lambda  left,right: pd.merge(left, right, on = ['Entry'], how = 'outer'), frames).fillna(float(0))
-    especies = DataFrame(NCBI_RDP_SILVA_SUMMARY.Entry.tolist(), columns = ['Entry']).merge(ASV_Full_Taxonomy[['Entry', 'Species']], on = 'Entry', how = 'left').Species.tolist()
-    generos = DataFrame(NCBI_RDP_SILVA_SUMMARY.Entry.tolist(), columns = ['Entry']).merge(ASV_Full_Taxonomy[['Entry', 'Genus']], on = 'Entry', how = 'left').Genus.tolist()
-    NCBI_RDP_SILVA_SUMMARY.insert(loc = 1, column='Species', value = especies)
-    NCBI_RDP_SILVA_SUMMARY.insert(loc = 2, column='Genus', value = generos)
-    
-    #print('  Result')
-    #print('   ASVs:', len(set(NCBI_RDP_SILVA_SUMMARY.Entry.unique())))
-    #print('Species:', len(set(NCBI_RDP_SILVA_SUMMARY.Species.unique())))
-    #print('  Genus:', len(set(NCBI_RDP_SILVA_SUMMARY.Genus.unique())))
-    
-    
-    procesar_button = widgets.Button(description="PROCESS", icon = 'fa-play', layout=Layout(width='120px'))
-    procesar_button.style.button_color = 'lime' #'deepskyblue'
-    procesar_button.style.font_weight = 'bold'
-    procesar_output = widgets.Output()
-    
-    
-    resultado = VBox([widgets.HTML('<b style="font-size:0.6vw">'+PREFIJO1+' : '+str(len(set(NCBI_RDP_SILVA_SUMMARY.Entry.unique())))+'</b>'),
-                       widgets.HTML('<b style="font-size:0.6vw">Genus : '+str(len(set(NCBI_RDP_SILVA_SUMMARY.Genus.unique())))+'</b>'),
-                      widgets.HTML('<b style="font-size:0.6vw">Species : '+str(len(set(NCBI_RDP_SILVA_SUMMARY.Species.unique())))+'</b>')
-                       ])
-    resultado_box = Box(children=[resultado], layout=Layout(display='flex', flex_flow='column', align_items='stretch', border='3px solid limegreen',
-                                                            width='120px', height=str(int(len(conteo_inicial.children) * 34))+'px'))
-    
-    
-    
-    #pro = HBox([VBox([blanca, procesar_button]),
-    #           VBox([blanca, widgets.HTML('<font color = black> <i class="fa fa-play fa-2x" aria-hidden="true"></i>')])])
-    
-    #display(HBox([pro, blanca, resultado_box]))
-    
-    display(HBox([resultado_box, blanca, ayuda0, VBox([procesar_button, procesar_output])]))
-    
-    
-
-    def button_clicked(b):
-        with procesar_output:
-            clear_output(True)
 
 
-
-            NCBI_RDP_SILVA_SUMMARY.to_csv('tablas/OTUs_NCBI_RDP_SILVA_SUMMARY.txt',index = None, sep = '\t')
+def box1(tipo_bd):
+    
+        
+    if tipo_bd == 'MERGE ALL DBs':
+        progress.value = '<font color = black> <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i> </font>'
+        #---------------
+        result = []
+        for e, entry in enumerate(set(list(NCBI.keys()) + list(RDP.keys()) + list(SILVA.keys()))):
+            record = []
+            GGG = []
+            for db in [NCBI, RDP, SILVA]:
+                if entry in list(db.keys()):
+                    valores = [float(db[entry][e+1]) for e, i in enumerate(db[entry]) if e%2 == 0]
+                    record.append([i for e, i in enumerate(db[entry]) if e%2 == 0] + valores + [np.mean(valores[4:])])
+            record.sort(key = lambda x: x[14], reverse = True)
+            result.append([entry] + record[0])
+        NCBI_RDP_SILVA = DataFrame(result, columns = ['Entry'] + category_names + column_scores + ['Mean'])
+        #-----------------
+        
+        Unification  = []
+        for i in NCBI_RDP_SILVA.Species.drop_duplicates():
+            """
+            toma la media mas alta para especies duplicadas con diferente linaje taxonomico
+            """
+            df = NCBI_RDP_SILVA[NCBI_RDP_SILVA.Species == i].sort_values(by ='Mean',ascending=False).reset_index(drop=True).sort_values(by ='Mean',ascending=False).reset_index(drop=True)
+            Unification.append(df[category_names].values.tolist()[0])
             
-
-            #display(resultado_box)
-
-            #rarefaction = NCBI_RDP_SILVA_SUMMARY[['Entry'] + name_sample]
-            rarefaction_collapse_specie = pd.pivot_table(NCBI_RDP_SILVA_SUMMARY[['Species'] + name_sample], values = name_sample, index = ['Species'], aggfunc = sum).reset_index()
-            #rarefaction_collapse_specie.to_csv('tablas/rarefaction_collapse_specie.txt',index = None, sep = '\t')
-
-
-            #data_for_rarefaction = {i : [{'No_species': len(np.array(rarefaction[i])[np.array(rarefaction[i]) > 0].tolist())},
-            #                             {'Counts': np.array(rarefaction[i])[np.array(rarefaction[i]) > 0].tolist()}] for i in name_sample}
-            data_for_rarefaction = {i : [{'No_species': len(np.array(rarefaction_collapse_specie[i])[np.array(rarefaction_collapse_specie[i]) > 0].tolist())},
-                                         {'Counts': np.array(rarefaction_collapse_specie[i])[np.array(rarefaction_collapse_specie[i]) > 0].tolist()}] for i in name_sample}
-
-            with open('tablas/OTUs_data_for_rarefaction.json', 'w') as fp:
-                json.dump(data_for_rarefaction, fp)
-                
-            procesando = widgets.IntProgress(value=0, min=0, max=10, description='Processing:', bar_style='', style={'bar_color': 'black'}, orientation='horizontal', layout=Layout(width='300px', height='25px'))
+        ASV_Full_Taxonomy = NCBI_RDP_SILVA[['Entry', 'Species'] + column_scores + ['Mean']].merge(DataFrame(Unification, columns = category_names), on = 'Species', how = 'left')
+        ASV_Full_Taxonomy = ASV_Full_Taxonomy.merge(ASV_counts, on = 'Entry', how = 'left')
+        
+        ASV_Full_Taxonomy.to_csv('tablas/OTU_Full_Taxonomy.txt', sep = '\t', index = None)
+        
+        clear_output(True)
+        progress.value = '<font color = black> <i class="fa fa-spinner fa-3x fa-fw"></i> </font>'
+        
+    if tipo_bd == 'NCBI': 
+        progress.value = '<font color = black> <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i> </font>'
+        #---------------
+        result = []
+        for e, entry in enumerate(set(list(NCBI.keys()))):
+            record = []
+            GGG = []
+            for db in [NCBI]:
+                if entry in list(db.keys()):
+                    valores = [float(db[entry][e+1]) for e, i in enumerate(db[entry]) if e%2 == 0]
+                    record.append([i for e, i in enumerate(db[entry]) if e%2 == 0] + valores + [np.mean(valores[4:])])
+            record.sort(key = lambda x: x[14], reverse = True)
+            result.append([entry] + record[0])
+        NCBI_DB = DataFrame(result, columns = ['Entry'] + category_names + column_scores + ['Mean'])
+        #---------------
+        
+        Unification  = []
+        for i in NCBI_DB.Species.drop_duplicates():
+            """
+            toma la media mas alta para especies duplicadas con diferente linaje taxonomico
+            """
+            df = NCBI_DB[NCBI_DB.Species == i].sort_values(by ='Mean',ascending=False).reset_index(drop=True).sort_values(by ='Mean',ascending=False).reset_index(drop=True)
+            Unification.append(df[category_names].values.tolist()[0])
             
-            import time
-            display(procesando)
-            for k in range(10):
-                time.sleep(0.05)
-                procesando.value = k+1
-                
-            clear_output(True)
-            #----------------------------------------------
-    procesar_button.on_click(button_clicked)
+        ASV_Full_Taxonomy = NCBI_DB[['Entry', 'Species'] + column_scores + ['Mean']].merge(DataFrame(Unification, columns = category_names), on = 'Species', how = 'left')
+        ASV_Full_Taxonomy = ASV_Full_Taxonomy.merge(ASV_counts, on = 'Entry', how = 'left')
+        ASV_Full_Taxonomy.to_csv('tablas/OTU_Full_Taxonomy.txt', sep = '\t', index = None)
+        
+        clear_output(True)
+        progress.value = '<font color = black> <i class="fa fa-spinner fa-3x fa-fw"></i> </font>'
+        
+    if tipo_bd == 'RDP':
+        progress.value = '<font color = black> <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i> </font>'
+        #---------------
+        result = []
+        for e, entry in enumerate(set(list(RDP.keys()))):
+            record = []
+            GGG = []
+            for db in [RDP]:
+                if entry in list(db.keys()):
+                    valores = [float(db[entry][e+1]) for e, i in enumerate(db[entry]) if e%2 == 0]
+                    record.append([i for e, i in enumerate(db[entry]) if e%2 == 0] + valores + [np.mean(valores[4:])])
+            record.sort(key = lambda x: x[14], reverse = True)
+            result.append([entry] + record[0])
+        RDP_DB = DataFrame(result, columns = ['Entry'] + category_names + column_scores + ['Mean'])
+        #---------------
+        
+        Unification  = []
+        for i in RDP_DB.Species.drop_duplicates():
+            """
+            toma la media mas alta para especies duplicadas con diferente linaje taxonomico
+            """
+            df = RDP_DB[RDP_DB.Species == i].sort_values(by ='Mean',ascending=False).reset_index(drop=True).sort_values(by ='Mean',ascending=False).reset_index(drop=True)
+            Unification.append(df[category_names].values.tolist()[0])
+            
+        ASV_Full_Taxonomy = RDP_DB[['Entry', 'Species'] + column_scores + ['Mean']].merge(DataFrame(Unification, columns = category_names), on = 'Species', how = 'left')
+        ASV_Full_Taxonomy = ASV_Full_Taxonomy.merge(ASV_counts, on = 'Entry', how = 'left')
+        ASV_Full_Taxonomy.to_csv('tablas/OTU_Full_Taxonomy.txt', sep = '\t', index = None)
+        
+        clear_output(True)
+        progress.value = '<font color = black> <i class="fa fa-spinner fa-3x fa-fw"></i> </font>'
+        
+        
+    if tipo_bd == 'SILVA':
+        progress.value = '<font color = black> <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i> </font>'
+        #---------------
+        result = []
+        for e, entry in enumerate(set(list(SILVA.keys()))):
+            record = []
+            GGG = []
+            for db in [SILVA]:
+                if entry in list(db.keys()):
+                    valores = [float(db[entry][e+1]) for e, i in enumerate(db[entry]) if e%2 == 0]
+                    record.append([i for e, i in enumerate(db[entry]) if e%2 == 0] + valores + [np.mean(valores[4:])])
+            record.sort(key = lambda x: x[14], reverse = True)
+            result.append([entry] + record[0])
+        SILVA_DB = DataFrame(result, columns = ['Entry'] + category_names + column_scores + ['Mean'])
+        #---------------
+        
+        Unification  = []
+        for i in SILVA_DB.Species.drop_duplicates():
+            """
+            toma la media mas alta para especies duplicadas con diferente linaje taxonomico
+            """
+            df = SILVA_DB[SILVA_DB.Species == i].sort_values(by ='Mean',ascending=False).reset_index(drop=True).sort_values(by ='Mean',ascending=False).reset_index(drop=True)
+            Unification.append(df[category_names].values.tolist()[0])
+            
+        ASV_Full_Taxonomy = SILVA_DB[['Entry', 'Species'] + column_scores + ['Mean']].merge(DataFrame(Unification, columns = category_names), on = 'Species', how = 'left')
+        ASV_Full_Taxonomy = ASV_Full_Taxonomy.merge(ASV_counts, on = 'Entry', how = 'left')
+        ASV_Full_Taxonomy.to_csv('tablas/OTU_Full_Taxonomy.txt', sep = '\t', index = None)
+        
+        clear_output(True)
+        progress.value = '<font color = black> <i class="fa fa-spinner fa-3x fa-fw"></i> </font>'
+        
+        
+        
+    ############################
+    
+    conteo_inicial = VBox([widgets.HTML('<font color = grey> <b style="font-size:0.6vw">OTUs : '+str(len(set(ASV_Full_Taxonomy.Entry.unique())))+'</b>'),
+                           widgets.HTML('<font color = grey> <b style="font-size:0.6vw">Genus : '+str(len(set(ASV_Full_Taxonomy.Genus.unique())))+'</b>'),
+                           widgets.HTML('<font color = grey> <b style="font-size:0.6vw">Species : '+str(len(set(ASV_Full_Taxonomy.Species.unique())))+'</b>')])
+    conteo_inicial_box = Box(children=[conteo_inicial], layout=Layout(display='flex', flex_flow='column', align_items='stretch', border='1px solid grey',
+                                                                      width='120px', height=str(int(len(conteo_inicial.children) * 34))+'px'))
+    
+    
+    
+    
+    def box2(umbral_tax_genus, umbral_tax_specie, limite_reads):    
+    
+    
+        Full_Taxonomy = ASV_Full_Taxonomy[ASV_Full_Taxonomy.G_Score >= umbral_tax_genus] # threshold of 0.8 at the genus level
+        Full_Taxonomy = Full_Taxonomy[Full_Taxonomy.S_Score >= umbral_tax_specie] # threshold of 0.5 at the species level
 
-OUT1 = widgets.interactive_output(box1, {'umbral_tax_genus':umbral_tax_genus, 'umbral_tax_specie':umbral_tax_specie, 'limite_reads':limite_reads})
+        COUNTS_THRESDHOLD = limite_reads
+        filtrados = {i : Full_Taxonomy[['Entry', i]].values[Full_Taxonomy[['Entry', i]].values[:, 1] >= COUNTS_THRESDHOLD] for i in name_sample}
+        frames = [DataFrame(filtrados[i].tolist(), columns = ['Entry', i]) for i in filtrados]
+        NCBI_RDP_SILVA_SUMMARY = reduce(lambda  left,right: pd.merge(left, right, on = ['Entry'], how = 'outer'), frames).fillna(float(0))
+        especies = DataFrame(NCBI_RDP_SILVA_SUMMARY.Entry.tolist(), columns = ['Entry']).merge(ASV_Full_Taxonomy[['Entry', 'Species']], on = 'Entry', how = 'left').Species.tolist()
+        generos = DataFrame(NCBI_RDP_SILVA_SUMMARY.Entry.tolist(), columns = ['Entry']).merge(ASV_Full_Taxonomy[['Entry', 'Genus']], on = 'Entry', how = 'left').Genus.tolist()
+        NCBI_RDP_SILVA_SUMMARY.insert(loc = 1, column='Species', value = especies)
+        NCBI_RDP_SILVA_SUMMARY.insert(loc = 2, column='Genus', value = generos)
+
+        #print('  Result')
+        #print('   ASVs:', len(set(NCBI_RDP_SILVA_SUMMARY.Entry.unique())))
+        #print('Species:', len(set(NCBI_RDP_SILVA_SUMMARY.Species.unique())))
+        #print('  Genus:', len(set(NCBI_RDP_SILVA_SUMMARY.Genus.unique())))
 
 
-# In[30]:
+        procesar_button = widgets.Button(description="PROCESS", icon = 'fa-play', layout=Layout(width='120px'))
+        procesar_button.style.button_color = 'lime' #'deepskyblue'
+        procesar_button.style.font_weight = 'bold'
+        procesar_output = widgets.Output()
 
 
-threshold = HBox([widgets.HTML('<font color = black> <i class="fa fa-filter fa-2x" aria-hidden="true"></i> <h style="font-size:0.7vw">Select taxonomic thresholds at the genus and species level:</h>'),
-                  blanca, conteo_inicial_box, VBox([umbral_tax_genus, umbral_tax_specie, limite_reads]), OUT1])
+        resultado = VBox([widgets.HTML('<b style="font-size:0.6vw">OTUs : '+str(len(set(NCBI_RDP_SILVA_SUMMARY.Entry.unique())))+'</b>'),
+                           widgets.HTML('<b style="font-size:0.6vw">Genus : '+str(len(set(NCBI_RDP_SILVA_SUMMARY.Genus.unique())))+'</b>'),
+                          widgets.HTML('<b style="font-size:0.6vw">Species : '+str(len(set(NCBI_RDP_SILVA_SUMMARY.Species.unique())))+'</b>')
+                           ])
+        resultado_box = Box(children=[resultado], layout=Layout(display='flex', flex_flow='column', align_items='stretch', border='3px solid limegreen',
+                                                                width='120px', height=str(int(len(conteo_inicial.children) * 34))+'px'))
 
 
-# In[ ]:
+
+        #pro = HBox([VBox([blanca, procesar_button]),
+        #           VBox([blanca, widgets.HTML('<font color = black> <i class="fa fa-play fa-2x" aria-hidden="true"></i>')])])
+
+        #display(HBox([pro, blanca, resultado_box]))
+
+        display(HBox([conteo_inicial_box, blanca, resultado_box, blanca, ayuda0, VBox([procesar_button, procesar_output])]))
+
+
+
+        def button_clicked(b):
+            with procesar_output:
+                clear_output(True)
+
+
+
+                NCBI_RDP_SILVA_SUMMARY.to_csv('tablas/OTUs_NCBI_RDP_SILVA_SUMMARY.txt',index = None, sep = '\t')
+
+
+                #display(resultado_box)
+
+                #rarefaction = NCBI_RDP_SILVA_SUMMARY[['Entry'] + name_sample]
+                rarefaction_collapse_specie = pd.pivot_table(NCBI_RDP_SILVA_SUMMARY[['Species'] + name_sample], values = name_sample, index = ['Species'], aggfunc = sum).reset_index()
+                #rarefaction_collapse_specie.to_csv('tablas/ASVs_rarefaction_collapse_specie.txt',index = None, sep = '\t')
+
+
+                #data_for_rarefaction = {i : [{'No_species': len(np.array(rarefaction[i])[np.array(rarefaction[i]) > 0].tolist())},
+                #                             {'Counts': np.array(rarefaction[i])[np.array(rarefaction[i]) > 0].tolist()}] for i in name_sample}
+                data_for_rarefaction = {i : [{'No_species': len(np.array(rarefaction_collapse_specie[i])[np.array(rarefaction_collapse_specie[i]) > 0].tolist())},
+                                             {'Counts': np.array(rarefaction_collapse_specie[i])[np.array(rarefaction_collapse_specie[i]) > 0].tolist()}] for i in name_sample}
+
+                with open('tablas/OTUs_data_for_rarefaction.json', 'w') as fp:
+                    json.dump(data_for_rarefaction, fp)
+
+                procesando = widgets.IntProgress(value=0, min=0, max=10, description='Processing:', bar_style='', style={'bar_color': 'black'}, orientation='horizontal', layout=Layout(width='300px', height='25px'))
+
+                import time
+                display(procesando)
+                for k in range(10):
+                    time.sleep(0.05)
+                    procesando.value = k+1
+
+                clear_output(True)
+                #----------------------------------------------
+        procesar_button.on_click(button_clicked)
+
+    OUT2 = widgets.interactive_output(box2, {'umbral_tax_genus':umbral_tax_genus, 'umbral_tax_specie':umbral_tax_specie, 'limite_reads':limite_reads})
+    
+    display(OUT2)
+
+OUT1 = widgets.interactive_output(box1, {'tipo_bd':tipo_bd})
+
+
+
+threshold = HBox([HBox([VBox([widgets.HTML('<font color = grey><b style="font-size:0.8vw">SELECT A DATABASE: </b>'), progress]), tipo_bd_box]),
+                  blanca, widgets.HTML('<font color = black> <i class="fa fa-filter fa-2x" aria-hidden="true"></i> <h style="font-size:0.7vw">Taxonomic threshold:</h>'),
+                  VBox([umbral_tax_genus, umbral_tax_specie, limite_reads]), OUT1])
 
 
 
 
 
-# In[ ]:
 
 
 
@@ -503,7 +668,7 @@ threshold = HBox([widgets.HTML('<font color = black> <i class="fa fa-filter fa-2
 
 # # Rarefaction
 
-# In[38]:
+
 
 
 help3_button = widgets.Button(description="Help", icon = 'fa-question-circle', layout=Layout(width='65px'))
@@ -569,13 +734,13 @@ help3_button.on_click(button_clicked)
 ayuda3 = HBox([help3_button, help3_button_output])
 
 
-# In[ ]:
 
 
 
 
 
-# In[104]:
+
+
 
 
 """
@@ -586,7 +751,11 @@ from matplotlib.colors import ListedColormap # funcion para crear un objeto <mat
 
 from tkinter import ttk
 
-
+progreso1 = widgets.HTML('<font color = black> <i class="fa fa-spinner fa-2x fa-fw"></i> </font>')
+progreso2 = widgets.HTML()
+estatico = widgets.HTML('<font color = limegreen> <b style="font-size:0.5vw">Processed samples : </b>')
+estatico = HBox([progreso1, estatico, progreso2])
+estatico_box = Box(children=[estatico], layout=Layout(border='1px solid limegreen', width='350px', height='32px'))
 
 RARE_button = widgets.Button(description="PROCESS AND VISUALIZE", icon = 'fa-eye', layout=Layout(width='590px'))
 RARE_button.style.button_color = 'gainsboro' #'deepskyblue'
@@ -602,16 +771,14 @@ def button_clicked(b):
     
     with RARE_output:
         clear_output(True)
+        progreso1.value = '<font color = black> <i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i> </font>'
         
-        progreso = widgets.HTML()
-        progress = HBox([widgets.HTML('<font color = black> <i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i> </font>'), progreso])
-        display(Box(children=[progress], layout=Layout(border='1px solid limegreen', width='585px', height='32px')))
         
         
         RAREFACTION = {}
         for G in data_for_rarefaction:
             
-            progreso.value = '<font color = limegreen> <b style="font-size:0.5vw">Processed samples : </b> <font color = black> <b style="font-size:0.5vw"> '+G+'</b>'
+            progreso2.value = '</b> <font color = black> <b style="font-size:0.5vw"> '+G+'</b>'
             
             Counts = data_for_rarefaction[G][1]['Counts']
             SUMA = np.sum(Counts)
@@ -632,7 +799,7 @@ def button_clicked(b):
                 xdata.append(s)
                 ydata.append(out)
             RAREFACTION[G] = {'xdata':np.array(xdata), 'ydata':np.array(ydata)}
-            #time.sleep(0.35)
+            time.sleep(0.35)
 
         val_min_x = min(set([j for i in RAREFACTION for j in RAREFACTION[i]['xdata']]))
         val_max_x = max(set([j for i in RAREFACTION for j in RAREFACTION[i]['xdata']]))
@@ -641,8 +808,8 @@ def button_clicked(b):
         
         
         clear_output(True)
-        progress = HBox([widgets.HTML('<font color = black> <i class="fa fa-spinner fa-2x fa-fw"></i> </font>'), progreso])
-        display(Box(children=[progress], layout=Layout(border='1px solid limegreen', width='585px', height='32px')))
+        progreso1.value = '<font color = black> <i class="fa fa-spinner fa-2x fa-fw"></i> </font>'
+        progreso2.value = '</b> <font color = black> <b style="font-size:0.5vw"> '+G+'</b>'
         
         
         mpl.rcParams.update(mpl.rcParamsDefault)
@@ -1096,31 +1263,31 @@ def button_clicked(b):
 RARE_button.on_click(button_clicked)
 
 
-# In[105]:
 
 
-RARE_ANALYSIS = VBox([RARE_button, RARE_output])
 
-
-# In[ ]:
+RARE_ANALYSIS = VBox([HBox([RARE_button, estatico_box]), RARE_output])
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
+
+
+
+
+
+
 
 
 
@@ -1128,7 +1295,7 @@ RARE_ANALYSIS = VBox([RARE_button, RARE_output])
 
 # # Alpha indices
 
-# In[107]:
+
 
 
 help1_button = widgets.Button(description="Help", icon = 'fa-question-circle', layout=Layout(width='65px'))
@@ -1243,7 +1410,7 @@ help1_button.on_click(button_clicked)
 ayuda1 = HBox([help1_button, help1_button_output])
 
 
-# In[108]:
+
 
 
 alfa_filo_button = widgets.Button(description="RUN: Philogenetic diversity", icon = 'fa-play', layout=Layout(width='230px'))
@@ -1393,7 +1560,7 @@ def button_clicked(b):
 alfa_filo_button.on_click(button_clicked)
 
 
-# In[109]:
+
 
 
 view_tree_button = widgets.Button(description="View phylogenetic tree in plain text ", icon = 'fa-eye', layout=Layout(width='280px'))
@@ -1437,13 +1604,13 @@ def button_clicked(b):
 view_tree_button.on_click(button_clicked)
 
 
-# In[110]:
+
 
 
 diver_filogen = VBox([HBox([alfa_filo_button, ayuda1, view_tree_button, view_tree_output]), alfa_filo_output])
 
 
-# In[111]:
+
 
 
 help2_button = widgets.Button(description="Help", icon = 'fa-question-circle', layout=Layout(width='65px'))
@@ -1516,7 +1683,7 @@ help2_button.on_click(button_clicked)
 ayuda2 = HBox([help2_button, help2_button_output])
 
 
-# In[112]:
+
 
 
 index_names = ['Taxa_S','Individuals','Dominance_D','Simpson_1-D','Shannon_H','Evenness_e^H/S',
@@ -1579,13 +1746,13 @@ def CHAO_1(entrada = list(), taxa = int()):
     return int(e)
 
 
-# In[ ]:
 
 
 
 
 
-# In[113]:
+
+
 
 
 indices_button = widgets.Button(description="RUN: Diversity calculations", icon = 'fa-play', layout=Layout(width='230px'))
@@ -1643,25 +1810,25 @@ def button_clicked(b):
 indices_button.on_click(button_clicked)
 
 
-# In[114]:
+
 
 
 metricas_diversidad = VBox([HBox([indices_button, ayuda2]), indices_button_output])
 
 
-# In[115]:
+
 
 
 PHY_DIV = HBox([diver_filogen, blanca, metricas_diversidad])
 
 
-# In[ ]:
 
 
 
 
 
-# In[116]:
+
+
 
 
 INDICES_button = widgets.Button(description="PROCESS AND VISUALIZE", icon = 'fa-eye', layout=Layout(width='590px'))
@@ -2114,25 +2281,25 @@ INDICES_button.on_click(button_clicked)
 IND_DIV = VBox([INDICES_button, INDICES_output])
 
 
-# In[117]:
+
 
 
 DIVERSITY_CALCULATIONS = VBox([PHY_DIV, IND_DIV])
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
+
+
+
 
 
 
@@ -2140,13 +2307,13 @@ DIVERSITY_CALCULATIONS = VBox([PHY_DIV, IND_DIV])
 
 # # Richness
 
-# In[119]:
+
 
 
 import itertools
 
 
-# In[120]:
+
 
 
 colores = {}
@@ -2154,13 +2321,13 @@ for q in qualitative_colors:
     colores[q] = [matplotlib.colors.to_hex(i) for i in plt.get_cmap(q)(np.arange(qualitative_colors[q]))]
 
 
-# In[ ]:
 
 
 
 
 
-# In[121]:
+
+
 
 
 """
@@ -2180,13 +2347,13 @@ for i in variables:
     variables_items_ordened[i] = ListA
 
 
-# In[ ]:
 
 
 
 
 
-# In[122]:
+
+
 
 
 """
@@ -2210,13 +2377,13 @@ for m in [1] + sorted(set(min_max_variables)):
     diccionarios_colores[m] = colores2
 
 
-# In[ ]:
 
 
 
 
 
-# In[123]:
+
+
 
 
 from matplotlib.patches import Rectangle
@@ -2359,32 +2526,32 @@ def BarcolorR(color = ''):
         plt.show()
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[124]:
+
+
+
+
 
 
 blanca2 = widgets.Button(layout=Layout(width='10px', height='12px'), disabled=True)
 blanca2.style.button_color = 'white'
 
 
-# In[125]:
+
 
 
 figu = plt.figure(figsize=(3, 3))
@@ -2398,13 +2565,13 @@ figu.clear()
 plt.close()
 
 
-# In[ ]:
 
 
 
 
 
-# In[126]:
+
+
 
 
 RICHNESS_button = widgets.Button(description="PROCESS AND VISUALIZE", icon = 'fa-eye', layout=Layout(width='590px'))
@@ -2874,19 +3041,19 @@ def button_clicked(b):
 RICHNESS_button.on_click(button_clicked)
 
 
-# In[127]:
+
 
 
 RICHNESS_CALCULATIONS = VBox([RICHNESS_button, RICHNESS_output])
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
+
+
 
 
 
@@ -2894,13 +3061,13 @@ RICHNESS_CALCULATIONS = VBox([RICHNESS_button, RICHNESS_output])
 
 # # TAXONOMY
 
-# In[ ]:
 
 
 
 
 
-# In[129]:
+
+
 
 
 def _remove_dups(L):
@@ -2917,7 +3084,7 @@ def _remove_dups(L):
     return L2
 
 
-# In[130]:
+
 
 
 import tkinter as tk
@@ -3153,7 +3320,7 @@ def SELECTSAM(SAM_SELECT = ''):
     root.mainloop()
 
 
-# In[131]:
+
 
 
 from collections import Counter
@@ -3226,13 +3393,13 @@ def LOCATIONS(source, target):
     return path_data
 
 
-# In[ ]:
 
 
 
 
 
-# In[132]:
+
+
 
 
 
@@ -4490,7 +4657,7 @@ def chord_plot():
     root.mainloop()
 
 
-# In[133]:
+
 
 
 Chord = widgets.Button(description="CHORD PLOT", icon = 'fa-circle-o', layout=Layout(width='120px', height='27px'))
@@ -4503,13 +4670,13 @@ def button_clicked1(b):
 Chord.on_click(button_clicked1)
 
 
-# In[ ]:
 
 
 
 
 
-# In[134]:
+
+
 
 
 metricas = ['euclidean','braycurtis','canberra','chebyshev','cityblock','correlation','cosine','dice',
@@ -4519,13 +4686,13 @@ metricas = ['euclidean','braycurtis','canberra','chebyshev','cityblock','correla
 metodos = ['complete','single','average','weighted','centroid','ward']
 
 
-# In[ ]:
 
 
 
 
 
-# In[138]:
+
+uno = widgets.HTML('<i class="fa fa-spinner fa-2x fa-fw"></i>')
 
 
 TAXONOMY_button = widgets.Button(description="PROCESS AND VISUALIZE", icon = 'fa-eye', layout=Layout(width='590px'))
@@ -4548,6 +4715,9 @@ def button_clicked(b):
     
     
     NCBI_RDP_SILVA_SUMMARY = pd.read_csv('tablas/OTUs_NCBI_RDP_SILVA_SUMMARY.txt', sep = '\t')
+
+    ASV_Full_Taxonomy = pd.read_csv('tablas/OTU_Full_Taxonomy.txt', sep = '\t')
+    ASV_Full_Taxonomy = ASV_Full_Taxonomy.merge(ASV_counts, on = 'Entry', how = 'left')
     
     with TAXONOMY_output:
         clear_output(True)
@@ -4601,7 +4771,7 @@ def button_clicked(b):
         
         despazamiento = {}
         n = 1.1
-        for e, i in enumerate(range(41)):
+        for e, i in enumerate(range(70)):
             despazamiento[e+1] = round(n, 3)
             n += 0.01
 
@@ -4733,8 +4903,7 @@ def button_clicked(b):
         filename_plot = widgets.Text(value='', placeholder='Chart name', description='', disabled=False, layout = Layout(width='270px', height='25px'))
         ######
         
-        uno = widgets.HTML()
-        display(uno)
+        
         def TaxonomY(tipo_kits_1, tax, PercentagE, METODO, METRICA, para_mostrar, Multiple_colorS, tam_plot1, width_linea, Variables_metadatA, family_axis, displacement_leye,
                     num_cols, SalidA0, SalidA1, SalidA2, SalidA3, SalidA4, SalidA5, SalidA6, sample_text, varia_text, ancho_dendo, cambiar_sample):
             
@@ -5464,19 +5633,19 @@ def button_clicked(b):
 TAXONOMY_button.on_click(button_clicked)
 
 
-# In[139]:
 
 
-TAXONOMY_ANALYSIS = VBox([TAXONOMY_button, TAXONOMY_output])
 
-
-# In[ ]:
+TAXONOMY_ANALYSIS = VBox([HBox([TAXONOMY_button, uno]), TAXONOMY_output])
 
 
 
 
 
-# In[ ]:
+
+
+
+
 
 
 
@@ -5485,7 +5654,7 @@ TAXONOMY_ANALYSIS = VBox([TAXONOMY_button, TAXONOMY_output])
 # # BETA DIVERSIRY: NO PHYLOGENETIC
 # ## BRAY CURTIS DISTANCES ANALYSIS AND THEN HIERARCHICAL CLUSTERING USING UPGMA (from scipy.cluster.hierarchy import average)  
 
-# In[144]:
+
 
 
 from numpy import zeros
@@ -5644,18 +5813,24 @@ def permanova(distance_matrix, grouping, column=None, permutations=999):
 from matplotlib.patches import Ellipse, Circle, Rectangle
 
 
-# In[145]:
+
 
 
 import plotly.graph_objects as go
 import plotly.io
 
 
-# In[146]:
+
 
 
 # dos niveles
 import datetime
+
+progreso1_no_fil = widgets.HTML('<font color = black> <i class="fa fa-spinner fa-2x fa-fw"></i> </font>')
+progreso2_no_fil = widgets.HTML()
+estatico_no_fil = widgets.HTML('<font color = limegreen> <b style="font-size:0.5vw">Processed samples : </b>')
+estatico_no_fil = HBox([progreso1_no_fil, estatico_no_fil, progreso2_no_fil])
+estatico_no_fil_box = Box(children=[estatico_no_fil], layout=Layout(border='1px solid limegreen', width='585px', height='32px'))
 
 BETA_button = widgets.Button(description="PROCESS AND VISUALIZE", icon = 'fa-eye', layout=Layout(width='590px'))
 BETA_button.style.button_color = 'gainsboro' #'deepskyblue'
@@ -5663,7 +5838,7 @@ BETA_button.style.font_weight = 'bold'
 BETA_output = widgets.Output()
 
 def button_clicked(b):
-    
+    import time
     from scipy.cluster.hierarchy import dendrogram, average
     
     
@@ -5692,9 +5867,7 @@ def button_clicked(b):
     with BETA_output:
         clear_output(True)
         
-        progreso = widgets.HTML()
-        progress = HBox([widgets.HTML('<i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i> </font>'), progreso])
-        display(Box(children=[progress], layout=Layout(border='1px solid limegreen', width='585px', height='32px')))
+        progreso1_no_fil.value = '<font color = black> <i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i> </font>'
         
         
         PCA_KITS = {}
@@ -5727,7 +5900,7 @@ def button_clicked(b):
             pca_kits_variables = {}
 
             for variable in variables:
-                progreso.value = '<font color = red> <b style="font-size:0.5vw">Processing samples: '+k+' = '+variable+'</b>'
+                progreso2_no_fil.value = '<font color = red> <b style="font-size:0.5vw">'+k+' = '+variable+'</b>'
                 
                 if len(DfDf[variable].unique()) == 1:
                     pass
@@ -5764,7 +5937,7 @@ def button_clicked(b):
 
                 pca_kits_variables[variable] = {'df_3':DF_3, 'permanova':Permanova, 'ivl':ivl, 'ivw':ivw, 'dvw':dvw, 'category':category,
                                                 'iv_ticks':iv_ticks, 'xlines':xlines, 'ylines':ylines, 'color_list':color_list, 'above_threshold_color':above_threshold_color}
-                
+                time.sleep(0.1)
                 
                 
             PCA_KITS[k] = pca_kits_variables
@@ -5772,10 +5945,8 @@ def button_clicked(b):
         del DF_3, Permanova, ivl, ivw, dvw, category, iv_ticks, xlines, ylines, color_list, above_threshold_color, id_samples
         
         clear_output(True)
-        progreso.value = '<font color = black> <b style="font-size:0.5vw">Finished process.</b>'
-        progress = HBox([widgets.HTML('<font color = black> <i class="fa fa-spinner fa-2x fa-fw"></i> </font>'), progreso])
-        display(Box(children=[progress], layout=Layout(border='1px solid limegreen', width='585px', height='32px')))
-        
+        progreso1_no_fil.value = '<font color = black> <i class="fa fa-spinner fa-2x fa-fw"></i> </font>'
+        progreso2_no_fil.value = '<font color = red> <b style="font-size:0.5vw">'+k+' = '+variable+'</b>'
         
         mpl.rcParams.update(mpl.rcParamsDefault)
 
@@ -6797,25 +6968,25 @@ def button_clicked(b):
 BETA_button.on_click(button_clicked)
 
 
-# In[147]:
 
 
-BETA_DIVERSITY_NO_PHYL = VBox([BETA_button, BETA_output])
 
-
-# In[ ]:
+BETA_DIVERSITY_NO_PHYL = VBox([HBox([BETA_button, estatico_no_fil_box]), BETA_output])
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
+
+
+
+
+
 
 
 
@@ -6823,18 +6994,24 @@ BETA_DIVERSITY_NO_PHYL = VBox([BETA_button, BETA_output])
 
 # # BETA DIVERSITY PHYLOGENETIC
 
-# In[152]:
+
 
 
 from io import StringIO
 from skbio.tree import TreeNode
 
 
-# In[153]:
+
 
 
 # dos niveles
 import datetime
+
+progreso1_fil = widgets.HTML('<font color = black> <i class="fa fa-spinner fa-2x fa-fw"></i> </font>')
+progreso2_fil = widgets.HTML()
+estatico_fil = widgets.HTML('<font color = limegreen> <b style="font-size:0.5vw">Processed samples : </b>')
+estatico_fil = HBox([progreso1_fil, estatico_fil, progreso2_fil])
+estatico_fil_box = Box(children=[estatico_fil], layout=Layout(border='1px solid limegreen', width='585px', height='32px'))
 
 BETA_PHY_button = widgets.Button(description="PROCESS AND VISUALIZE", icon = 'fa-eye', layout=Layout(width='590px'))
 BETA_PHY_button.style.button_color = 'gainsboro' #'deepskyblue'
@@ -6842,7 +7019,7 @@ BETA_PHY_button.style.font_weight = 'bold'
 BETA_PHY_output = widgets.Output()
 
 def button_clicked(b):
-    
+    import time
     from scipy.cluster.hierarchy import dendrogram, average
     
     
@@ -6924,9 +7101,7 @@ def button_clicked(b):
     with BETA_PHY_output:
         clear_output(True)
         
-        progreso = widgets.HTML()
-        progress = HBox([widgets.HTML('<i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i> </font>'), progreso])
-        display(Box(children=[progress], layout=Layout(border='1px solid limegreen', width='585px', height='32px')))
+        progreso1_fil.value = '<font color = black> <i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i> </font>'
         
         
         PCA_KITS = {}
@@ -6960,7 +7135,7 @@ def button_clicked(b):
             pca_kits_variables = {}
 
             for variable in variables:
-                progreso.value = '<font color = red> <b style="font-size:0.5vw">Processing samples: '+k+' = '+variable+'</b>'
+                progreso2_fil.value = '<font color = red> <b style="font-size:0.5vw">'+k+' = '+variable+'</b>'
                 
                 if len(MatriX_unweighted[variable].unique()) == 1:
                     pass
@@ -6996,7 +7171,7 @@ def button_clicked(b):
 
                 pca_kits_variables[variable] = {'df_3':DF_3, 'permanova':Permanova, 'ivl':ivl, 'ivw':ivw, 'dvw':dvw, 'category':category,
                                                 'iv_ticks':iv_ticks, 'xlines':xlines, 'ylines':ylines, 'color_list':color_list, 'above_threshold_color':above_threshold_color}
-                
+                time.sleep(0.1)
                 
                 
             PCA_KITS[k] = pca_kits_variables
@@ -7004,9 +7179,8 @@ def button_clicked(b):
         del DF_3, Permanova, ivl, ivw, dvw, category, iv_ticks, xlines, ylines, color_list, above_threshold_color, matrixLabels
         
         clear_output(True)
-        progreso.value = '<font color = black> <b style="font-size:0.5vw">Finished process.</b>'
-        progress = HBox([widgets.HTML('<font color = black> <i class="fa fa-spinner fa-2x fa-fw"></i> </font>'), progreso])
-        display(Box(children=[progress], layout=Layout(border='1px solid limegreen', width='585px', height='32px')))
+        progreso1_fil.value = '<font color = black> <i class="fa fa-spinner fa-2x fa-fw"></i> </font>'
+        progreso2_fil.value = '<font color = red> <b style="font-size:0.5vw">'+k+' = '+variable+'</b>'
         
         
         mpl.rcParams.update(mpl.rcParamsDefault)
@@ -8023,31 +8197,31 @@ def button_clicked(b):
 BETA_PHY_button.on_click(button_clicked)
 
 
-# In[154]:
 
 
-BETA_DIVERSITY_PHYL = VBox([BETA_PHY_button, BETA_PHY_output])
 
-
-# In[ ]:
+BETA_DIVERSITY_PHYL = VBox([HBox([BETA_PHY_button, estatico_fil_box]), BETA_PHY_output])
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[157]:
+
+
+
+
+
+
 
 
 graficas = {'Rarefaction Analysis': RARE_ANALYSIS,
@@ -8061,7 +8235,7 @@ exe.style.button_width = '258px'
 exe.style.font_weight = 'bold'
 
 
-# In[158]:
+
 
 
 box_exe = Layout(display='flex',
@@ -8081,50 +8255,14 @@ OU = widgets.interactive_output(ss, {'exe':exe})
 RESULTS_16S = VBox([Box(children = [HBox([widgets.HTML('<b style="font-size:0.9vw">ANALYSIS: </b>'), exe])], layout = box_exe), OU])
 
 
-# In[159]:
 
 
-threshold_box = Box(children=[VBox([blanca2, threshold])], layout=Layout(border='5px solid beige', width='1700px', height='140px'))
+
+threshold_box = Box(children=[VBox([blanca2, threshold])], layout=Layout(border='5px solid beige', width='1700px', height='150px'))
 
 
-# In[160]:
+
 
 
 METAGENOMIC_16S_OTUs = VBox([threshold_box, blanca2, RESULTS_16S])
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
 
