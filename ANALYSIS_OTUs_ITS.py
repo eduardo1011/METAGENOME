@@ -337,7 +337,7 @@ for i in UNITE_DB.Species.drop_duplicates():
 
 ASV_Full_Taxonomy = UNITE_DB[['Entry', 'Species'] + column_scores + ['Mean']].merge(DataFrame(Unification, columns = category_names), on = 'Species', how = 'left')
 ASV_Full_Taxonomy = ASV_Full_Taxonomy.merge(ASV_counts, on = 'Entry', how = 'left')
-ASV_Full_Taxonomy.to_csv('tablas/ASV_Full_Taxonomy.txt', sep = '\t', index = None)
+ASV_Full_Taxonomy.to_csv('tablas/OTU_Full_Taxonomy.txt', sep = '\t', index = None)
 
 
 
