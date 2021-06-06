@@ -289,16 +289,55 @@ for i in range(20):
 
 
 
-ASV_Full_Taxonomy = pd.read_csv('tablas/OTU_Full_Taxonomy.txt', sep = '\t')
 ASV_counts = pd.read_csv('clustering/OTU_counts.txt', sep = '\t')
-ASV_Full_Taxonomy = ASV_Full_Taxonomy.merge(ASV_counts, on = 'Entry', how = 'left')
 
 name_sample = ASV_counts.iloc[:, 1:].columns.tolist()
 
 
+# Selections
+Columnas = [0, 5, 7, 8, 10, 11, 13, 14, 16, 17, 19, 20, 22, 23, 25]
+Nombres = ['Entry', 'Kingdom', 'K_Score', 'Phylum', 'P_Score', 'Class', 'C_Score',
+           'Order', 'O_Score', 'Family', 'F_Score', 'Genus', 'G_Score', 'Species', 'S_Score']
+column_scores = ['K_Score', 'P_Score', 'C_Score', 'O_Score', 'F_Score', 'G_Score', 'S_Score']
+category_names = ['Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Genus', 'Species']
+lin_scores = dict(zip(category_names, column_scores))
+scores_lin = dict(zip(column_scores, category_names))
+asv_classif, asv = ['OTU_vs_UNITE_classif'], 'OTU'
 
+UNITE = {}
+for _clas in asv_classif:
+    df = pd.read_csv('tablas/'+_clas+'.txt', sep = '\t', header = None)
+    df = df[Columnas]
+    df.columns = Nombres
+    df = df[df.Species.str.contains('virus|_strain') == False]
+    if 'UNITE' == _clas.split('_')[2]:
+        for e, i in enumerate(df['Entry']):
+            UNITE[i] = list(df.iloc[e].values[1:])
+colnames = df.columns[1:].tolist()
 
+result = []
+for e, entry in enumerate(set(list(UNITE.keys()))):
+    record = []
+    GGG = []
+    for db in [UNITE]:
+        if entry in list(db.keys()):
+            valores = [float(db[entry][e+1]) for e, i in enumerate(db[entry]) if e%2 == 0]
+            record.append([i for e, i in enumerate(db[entry]) if e%2 == 0] + valores + [np.mean(valores[4:])])
+    record.sort(key = lambda x: x[14], reverse = True)
+    result.append([entry] + record[0])
+UNITE_DB = DataFrame(result, columns = ['Entry'] + category_names + column_scores + ['Mean'])
 
+Unification  = []
+for i in UNITE_DB.Species.drop_duplicates():
+    """
+    toma la media mas alta para especies duplicadas con diferente linaje taxonomico
+    """
+    df = UNITE_DB[UNITE_DB.Species == i].sort_values(by ='Mean',ascending=False).reset_index(drop=True).sort_values(by ='Mean',ascending=False).reset_index(drop=True)
+    Unification.append(df[category_names].values.tolist()[0])
+
+ASV_Full_Taxonomy = UNITE_DB[['Entry', 'Species'] + column_scores + ['Mean']].merge(DataFrame(Unification, columns = category_names), on = 'Species', how = 'left')
+ASV_Full_Taxonomy = ASV_Full_Taxonomy.merge(ASV_counts, on = 'Entry', how = 'left')
+ASV_Full_Taxonomy.to_csv('tablas/ASV_Full_Taxonomy.txt', sep = '\t', index = None)
 
 
 
@@ -451,6 +490,22 @@ def box1(umbral_tax_genus, umbral_tax_specie, limite_reads):
 
 
             NCBI_RDP_SILVA_SUMMARY.to_csv('tablas/OTUs_NCBI_RDP_SILVA_SUMMARY.txt',index = None, sep = '\t')
+            
+            Full_Taxonomy.to_csv('tablas/OTU_Full_Taxonomy_Threshold.txt', sep = '\t', index = None)
+            datasets = []
+            for m in name_sample:
+                df2 = Full_Taxonomy[category_names+[m]][Full_Taxonomy[category_names+[m]][m] >= COUNTS_THRESDHOLD].sort_values(by =m,ascending=False).reset_index(drop=True)
+                df2 = df2[[m]+category_names]
+                cuentas = df2[m].sum()
+                df2['Ratio'] = (df2[m] / cuentas) * 100
+                df2 = df2.rename(columns={m: 'Counts'})
+                df2.insert(loc = 0, column='Sample', value=[m]*len(df2))
+                datasets.append(df2)
+            DataSets = pd.concat(datasets)
+            """
+            Dataframe generado con datos para mostrar con el entorno interactivo de Krona
+            """
+            DataSets[['Sample', 'Counts', 'Ratio'] + category_names].to_csv('tablas/OTU_Full_Taxonomy_for_KRONA.txt',index = None, sep = '\t', header = None)
             
 
             #display(resultado_box)
