@@ -9,7 +9,8 @@ PREFIJO3 = 'otu'
 PREFIJO4 = 'otus'
 
 
-
+import sys
+sys.path.append('../')
 
 
 import subprocess, warnings, os, shutil, re, pandas
