@@ -2,7 +2,8 @@
 # coding: utf-8
 
 
-
+import sys
+sys.path.append('../')
 
 
 import subprocess, warnings, os, shutil, re, pandas
