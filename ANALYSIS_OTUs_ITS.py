@@ -8,7 +8,8 @@ PREFIJO2 = 'OTUs'
 PREFIJO3 = 'otu'
 PREFIJO4 = 'otus'
 
-
+import sys
+sys.path.append('../')
 
 
 
