@@ -2519,17 +2519,17 @@ def button_clicked(b):
         mostrat_SignificanciA = widgets.ToggleButtons(options=['True', 'False'], value = 'True')
         mostrat_SignificanciA.style.button_width = '55px'
         
-        n = 2.5
+        n = 0.5
         cor_size2 = {}
-        for e, i in enumerate(range(12)):
+        for e, i in enumerate(range(15)):
             cor_size2[e+1] = round(n, 2)
             n += 0.5
         
-        ancho = widgets.SelectionSlider(options=list(cor_size2.keys()),value=5,disabled=False,
+        ancho = widgets.SelectionSlider(options=list(cor_size2.keys()),value=9,disabled=False,
                                               description = 'Chart width:',
                                         continuous_update=False,orientation='horizontal',readout=True,
                                            layout=Layout(width='400px', height='25px'))
-        alto = widgets.SelectionSlider(options=list(cor_size2.keys())[:8],value=3,disabled=False,
+        alto = widgets.SelectionSlider(options=list(cor_size2.keys())[:12],value=7,disabled=False,
                                               description = 'Chart heigth:',
                                         continuous_update=False,orientation='horizontal',readout=True,
                                            layout=Layout(width='400px', height='25px'))
@@ -2686,6 +2686,11 @@ def button_clicked(b):
             else:
                 pass
 
+            plt.gca().tick_params(which='major', width = 2, length=4, color='gainsboro')
+            plt.gca().spines['left'].set_linewidth(2)
+            plt.gca().spines['bottom'].set_linewidth(2)
+            plt.gca().spines['left'].set_color('gainsboro')
+            plt.gca().spines['bottom'].set_color('gainsboro')
             plt.gca().spines['right'].set_color(None)
             plt.gca().spines['top'].set_color(None)
 
@@ -2938,6 +2943,522 @@ RICHNESS_button.on_click(button_clicked)
 
 RICHNESS_CALCULATIONS = VBox([RICHNESS_button, RICHNESS_output])
 
+
+
+
+
+
+
+###################################################################
+###################################################################
+###################################################################
+
+RICHNESS2_button = widgets.Button(description="PROCESS AND VISUALIZE", icon = 'fa-eye', layout=Layout(width='590px'))
+RICHNESS2_button.style.button_color = 'gainsboro' #'deepskyblue'
+RICHNESS2_button.style.font_weight = 'bold'
+RICHNESS2_output = widgets.Output()
+
+family = sorted(['Liberation Serif','Microsoft Sans Serif','Open Sans','Times New Roman','3ds Light','Calibri','Comic Sans MS',
+                  'Arial','Courier New','Microsoft Yi Baiti','Lucida Console'])
+
+def button_clicked(b):
+    
+    import os.path
+    import seaborn as sns
+    
+    if os.path.isfile('tablas/OTUs_PD.txt'):
+        PD  = pd.read_csv('tablas/OTUs_PD.txt', sep = '\t')
+        Indices = pd.read_csv('tablas/OTUs_Indices.txt', sep = '\t')
+        Indices = pd.concat([Indices, PD]).reset_index(drop = True)
+    else:
+        Indices = pd.read_csv('tablas/OTUs_Indices.txt', sep = '\t')
+    
+    Indices_transpose = Indices.T.iloc[1:,:].astype(float)
+    Indices_transpose.columns = list(Indices['Index'])
+    Indices_transpose.insert(loc = 0, column='Name Sample', value = Indices.iloc[:,1:].columns)
+    Indices_transpose = Indices_transpose.reset_index(drop = True)
+    Indices_transpose = Indices_transpose.merge(metadata[['Name Sample'] + variables], on = 'Name Sample', how = 'left')
+    
+    with RICHNESS2_output:
+        clear_output(True)
+        
+        blanca3 = widgets.Button(layout=Layout(width='10px', height='10px'), disabled=True)
+        blanca3.style.button_color = 'white'
+        
+        IndicE = widgets.ToggleButtons(options= list(reversed(list(dict(OrderedDict(Counter({i : len(i) for i in Indices.Index.tolist()}).most_common())).keys()))), value = 'Chao-1', button_style = '')
+        IndicE.style.button_width = '170px'
+        tipo_indice_box = Box(children=[VBox([IndicE])], layout=Layout(border='1px solid gainsboro', width='180px', height='380px'))
+        
+        tipo_kits_1 = widgets.ToggleButtons(options= ['Both kits'] + metadata[VARIABLE_KIT].unique().tolist(), value = 'Both kits', button_style = 'primary')
+        tipo_kits_1.style.button_width = '170px'
+        tipo_kits_1.style.font_weight = 'bold'
+        tipo_kit_1_box = Box(children=[VBox([tipo_kits_1])], layout=Layout(border='1px solid #1976d2', width='180px', height='95px'))
+        
+        
+        permitidos = []
+        for j in variables_items_ordened:
+            if len(variables_items_ordened[j]) <= 4:
+                permitidos.append(j)
+        
+        
+        #variable fija
+        VariablE = widgets.ToggleButtons(options= permitidos, value = permitidos[0], button_style = 'warning')
+        VariablE.style.button_width = '170px'
+        cuenta = 30 * len(permitidos)
+        tipo_variable_box = Box(children=[VBox([VariablE])], layout=Layout(border='1px solid #ff9800', width='180px', height=str(cuenta)+'px'))
+        
+        
+        permitidos2 = []
+        for j in variables_items_ordened:
+            if len(variables_items_ordened[j]) <= 4:
+                permitidos2.append(j)
+        # variable movil
+        VariablE2 = widgets.ToggleButtons(options= permitidos2, value = permitidos2[1], button_style = 'danger')
+        VariablE2.style.button_width = '170px'
+        cuenta2 = 30 * len(permitidos2)
+        tipo_variable_box2 = Box(children=[VBox([VariablE2])], layout=Layout(border='1px solid #ff9800', width='180px', height=str(cuenta2)+'px'))
+        
+        SignificanciA = widgets.SelectionSlider(options=[0.01, 0.02, 0.03, 0.04, 0.05],value=0.05,disabled=False, description = 'P-value <:', layout=Layout(width='280px', height='25px'),
+                                                continuous_update=False,orientation='horizontal',readout=True)
+        mostrat_SignificanciA = widgets.ToggleButtons(options=['True', 'False'], value = 'True')
+        mostrat_SignificanciA.style.button_width = '55px'
+        
+        n = 0.5
+        cor_size2 = {}
+        for e, i in enumerate(range(15)):
+            cor_size2[e+1] = round(n, 2)
+            n += 0.5
+        
+        ancho = widgets.SelectionSlider(options=list(cor_size2.keys()),value=9,disabled=False,
+                                              description = 'Chart width:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                           layout=Layout(width='400px', height='25px'))
+        alto = widgets.SelectionSlider(options=list(cor_size2.keys())[:12],value=7,disabled=False,
+                                              description = 'Chart heigth:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                           layout=Layout(width='400px', height='25px'))
+        
+        alfa_box = widgets.SelectionSlider(options=np.round(np.linspace(0, 1, 11), 2),value=1,disabled=False,
+                                              description = 'Box alpha:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                           layout=Layout(width='400px', height='25px'))
+        
+        #markers_point = widgets.ToggleButtons(options=['o', 's', 'p', 'H', '*', 'D'], value = 'o')
+        #markers_point.style.button_width = '26px'
+        
+        markers_point = widgets.ToggleButtons(options=['⏺', '⏹'], value = '⏺')
+        markers_point.style.button_width = '31px'
+        
+        marker_color = widgets.ColorPicker(concise=False, value='#000000', disabled=False, layout = Layout(width='97px', height='25px'))
+
+        marker_size = widgets.SelectionSlider(options=range(0, 101),value=50,disabled=False,
+                                                      description = 'Marker size:',
+                                                continuous_update=False,orientation='horizontal',readout=True,
+                                                    layout=Layout(width='400px', height='25px'))
+
+        marker_alfa = widgets.SelectionSlider(options=np.round(np.linspace(0, 1, 11), 2),value=1,disabled=False,
+                                                      description = 'Marker alpha:',
+                                                continuous_update=False,orientation='horizontal',readout=True,
+                                                   layout=Layout(width='400px', height='25px'))
+        
+        
+        label_X = widgets.SelectionSlider(options=range(5, 31),value=11,disabled=False,
+                                              description = 'X label:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                            layout=Layout(width='400px', height='25px'))
+        ticklabels_X = widgets.SelectionSlider(options=range(5, 31),value=10,disabled=False,
+                                              description = 'X tick labels:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                            layout=Layout(width='400px', height='25px'))
+
+        label_Y = widgets.SelectionSlider(options=range(5, 31),value=11,disabled=False,
+                                              description = 'Y label:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                            layout=Layout(width='400px', height='25px'))
+        ticklabels_Y = widgets.SelectionSlider(options=range(5, 31),value=10,disabled=False,
+                                              description = 'Y tick labels:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                            layout=Layout(width='400px', height='25px'))
+        family_axis = widgets.Dropdown(options = family, value = 'Open Sans', disabled = False,
+                                   layout = Layout(width='290px', height='25px'))
+        
+        angulos = list(range(0, 361, 10))
+        rotation = widgets.SelectionSlider(options=angulos,value=0,disabled=False,
+                                              #description = 'X tick rotation:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                           layout=Layout(width='300px', height='25px'))
+        
+        width_box = widgets.SelectionSlider(options=np.round(np.linspace(0, 1, 11), 2),value=0.5,disabled=False,
+                                                      description = 'Box width:',
+                                                continuous_update=False,orientation='horizontal',readout=True,
+                                                   layout=Layout(width='400px', height='25px'))
+        
+        filename = widgets.Text(value='', placeholder='File name.txt', description='', disabled=False, layout = Layout(width='195px', height='25px'))
+        
+        filename_plot = widgets.Text(value='', placeholder='Chart name', description='', disabled=False, layout = Layout(width='270px', height='25px'))
+        
+        def updata_plot(tipo_kits_1, IndicE, VariablE, VariablE2):
+            
+            if VariablE == VariablE2:
+                print('!!! Variables must not be the same !!!')
+            else:
+            
+                if tipo_kits_1 == 'Both kits':
+                    estudio = Indices_transpose[['Name Sample', IndicE, VariablE]]
+                    pt = pd.pivot_table(estudio, values='Name Sample', index=VariablE, aggfunc=len).reset_index()
+                    pat = pt[pt['Name Sample'] > 1][VariablE].astype(str).tolist() # aquellas variables con valores menores o igual a 1 seran eliminadas
+                    estudio = estudio[estudio[VariablE].str.contains('^'+'$|^'.join(pat)+'$') == True]
+
+                if tipo_kits_1 == 'DNPowerSoil':
+                    estudio = Indices_transpose[['Name Sample', IndicE, VariablE]]
+                    estudio = DataFrame(DNPowerSoil, columns = ['Name Sample']).merge(estudio, on = 'Name Sample', how = 'left').reset_index(drop = True)
+                    pt = pd.pivot_table(estudio, values='Name Sample', index=VariablE, aggfunc=len).reset_index()
+                    pat = pt[pt['Name Sample'] > 1][VariablE].astype(str).tolist() # aquellas variables con valores menores o igual a 1 seran eliminadas
+                    estudio = estudio[estudio[VariablE].str.contains('^'+'$|^'.join(pat)+'$') == True]
+
+                if tipo_kits_1 == 'DNMicrobial':
+                    estudio = Indices_transpose[['Name Sample', IndicE, VariablE]]
+                    estudio = DataFrame(DNMicrobial, columns = ['Name Sample']).merge(estudio, on = 'Name Sample', how = 'left').reset_index(drop = True)
+                    pt = pd.pivot_table(estudio, values='Name Sample', index=VariablE, aggfunc=len).reset_index()
+                    pat = pt[pt['Name Sample'] > 1][VariablE].astype(str).tolist() # aquellas variables con valores menores o igual a 1 seran eliminadas
+                    estudio = estudio[estudio[VariablE].str.contains('^'+'$|^'.join(pat)+'$') == True]
+
+
+
+                #---
+                segnda_variable = Indices_transpose[VariablE2].unique().tolist()
+                try:
+                    segnda_variable.sort(key=float)
+                except ValueError:
+                    segnda_variable.sort(key=str)
+                #---
+                orden_segnda_variable = dict(zip(segnda_variable, range(len(segnda_variable))))
+                
+                if VariablE2 == 'Genomic DNA kit':
+                    if tipo_kits_1 == 'Both kits':
+                        tipo_elemento = widgets.ToggleButtons(options= segnda_variable, value = segnda_variable[0], button_style = 'danger')
+                        tipo_elemento.style.button_width = '170px'
+                        cuenta = 32 * len(segnda_variable)
+                        tipo_elemento_box = Box(children=[VBox([tipo_elemento])], layout=Layout(border='1px solid white', width='180px', height= str(cuenta)+'px'))
+                    if tipo_kits_1 == 'DNPowerSoil':
+                        tipo_elemento = widgets.ToggleButtons(options= ['DNPowerSoil'], value = 'DNPowerSoil', button_style = 'danger')
+                        tipo_elemento.style.button_width = '170px'
+                        cuenta = 32 * len(segnda_variable)
+                        tipo_elemento_box = Box(children=[VBox([tipo_elemento])], layout=Layout(border='1px solid white', width='180px', height= str(cuenta)+'px'))
+                    if tipo_kits_1 == 'DNMicrobial':
+                        tipo_elemento = widgets.ToggleButtons(options= ['DNMicrobial'], value = 'DNMicrobial', button_style = 'danger')
+                        tipo_elemento.style.button_width = '170px'
+                        cuenta = 32 * len(segnda_variable)
+                        tipo_elemento_box = Box(children=[VBox([tipo_elemento])], layout=Layout(border='1px solid white', width='180px', height= str(cuenta)+'px'))
+                else:
+                
+                    tipo_elemento = widgets.ToggleButtons(options= segnda_variable, value = segnda_variable[0], button_style = 'danger')
+                    tipo_elemento.style.button_width = '170px'
+                    cuenta = 32 * len(segnda_variable)
+                    tipo_elemento_box = Box(children=[VBox([tipo_elemento])], layout=Layout(border='1px solid white', width='180px', height= str(cuenta)+'px'))
+
+
+                
+                def updata_plottt(tipo_elemento, ticklabels_Y, width_box, SignificanciA, mostrat_SignificanciA):
+                    IteM = tipo_elemento
+                    estudio2 = estudio.merge(Indices_transpose[['Name Sample', VariablE2]], on = 'Name Sample', how = 'left')
+                    estudio3 = estudio2[estudio2[VariablE2] == IteM]
+                    
+                    pt = pd.pivot_table(estudio3, values='Name Sample', index=VariablE, aggfunc=len).reset_index()
+                    pat = pt[pt['Name Sample'] > 1][VariablE].astype(str).tolist()
+                    estudio4 = estudio3[estudio3[VariablE].str.contains('^'+'$|^'.join(pat)+'$') == True]
+                    
+                    
+                    VariablE_orderned = estudio4[VariablE].unique().tolist()
+                    #---
+                    try:
+                        VariablE_orderned.sort(key=float)
+                    except ValueError:
+                        VariablE_orderned.sort(key=str)
+                    #---
+                    orden_in_plot = dict(zip(VariablE_orderned, range(len(VariablE_orderned))))
+
+                    datos = {}
+                    for E in VariablE_orderned:
+                        datos[E] = estudio[estudio[VariablE] == E][IndicE].tolist()
+
+                    combinaciones = list(itertools.combinations(VariablE_orderned, 2))
+
+                    Significativos = {}
+                    for d in combinaciones:
+                        PVALUE = stats.ttest_ind(datos[d[0]], datos[d[1]], equal_var=False).pvalue
+                        if PVALUE < SignificanciA:
+                            if PVALUE < 0.009999:
+                                Significativos[d[0]+'_vs_'+d[1]] = {'ini_end':[orden_in_plot[d[0]], orden_in_plot[d[0]], orden_in_plot[d[1]], orden_in_plot[d[1]]],
+                                                              'pval':format(PVALUE, '.3e')}
+                            else:
+                                Significativos[d[0]+'_vs_'+d[1]] = {'ini_end':[orden_in_plot[d[0]], orden_in_plot[d[0]], orden_in_plot[d[1]], orden_in_plot[d[1]]],
+                                                              'pval':format(PVALUE, '.3e')}
+                
+                    mpl.rcParams.update(mpl.rcParamsDefault)
+                    sns.set(style="white")
+
+                    fig = plt.figure(figsize=(3, 3))
+
+                    AX3 = fig.add_axes([0, 0, 1, 1])
+
+
+                    AX3 = sns.boxplot(x=VariablE, y=IndicE, data=estudio4, hue=None, saturation=1, width=width_box,
+                                     order = VariablE_orderned, linewidth=1, fliersize = 0)
+
+                    AX3.tick_params(bottom=True, right=False, top=False, left=True, width = 1, length=4, color='black')
+
+                    AX3 = sns.swarmplot(x=VariablE, y=IndicE, data=estudio4, color="black", order = VariablE_orderned)
+
+                    labels_Y = AX3.get_yticks()
+
+                    limy = AX3.get_ylim()[1] + (AX3.get_ylim()[1] * 0.05)
+
+                    AX3.xaxis.get_label().set_weight("bold")
+                    AX3.yaxis.get_label().set_weight("bold")
+
+                    plt.xlabel(VariablE, weight="bold")
+                    plt.ylabel(IndicE, weight="bold")
+
+                    if mostrat_SignificanciA == 'True':
+                        if len(Significativos) == 0:
+                            pass
+                        else:
+                            distancia = limy * 0.07 # 8%
+                            for i in Significativos:
+                                #print(Significativos[i]['ini_end'], [limy-(limy * 0.02), limy, limy, limy-(limy * 0.02)])
+                                AX3.plot(Significativos[i]['ini_end'], [limy-(limy * 0.02), limy, limy, limy-(limy * 0.02)], '-', linewidth=1, color='black')
+                                AX3.text(Significativos[i]['ini_end'][-1], limy, '  '+str(Significativos[i]['pval']), ha = 'left', va = 'center', fontsize = ticklabels_Y-1, fontfamily = 'Open Sans')
+                                limy += distancia
+
+                            AX3.set_yticks(labels_Y)
+                    else:
+                        pass
+
+                    plt.gca().tick_params(which='major', width = 2, length=4, color='gainsboro')
+                    plt.gca().spines['left'].set_linewidth(2)
+                    plt.gca().spines['bottom'].set_linewidth(2)
+                    plt.gca().spines['left'].set_color('gainsboro')
+                    plt.gca().spines['bottom'].set_color('gainsboro')
+                    plt.gca().spines['right'].set_color(None)
+                    plt.gca().spines['top'].set_color(None)
+
+
+                    plt.close()
+
+
+
+
+
+                    colores3 = widgets.Dropdown(options= list(diccionarios_colores[len(VariablE_orderned)].keys()), value='tab20_v0',
+                                     layout=Layout(width='100px', height='28px'))
+
+
+                    # --- save
+                    ancho_plot_save = str(71)
+                    png1 = widgets.Button(description="PNG", icon = 'fa-bar-chart', layout=Layout(width=ancho_plot_save+'px'))
+                    png1.style.button_color = 'gold'
+                    output1 = widgets.Output()
+                    def button_clicked1(b):
+                        with output1:
+                            clear_output(True)
+                            if filename_plot.value is '':
+                                nombre_grafico = 'Richness_chart_'+datetime.datetime.now().strftime('%d.%B.%Y_%I-%M%p')
+                            if filename_plot.value is not '':
+                                nombre_grafico = filename_plot.value
+
+                            fig.savefig('plots_otu/richness/'+nombre_grafico+'.png', dpi = 900, bbox_inches= 'tight')
+
+
+                    png1.on_click(button_clicked1)
+                    #----
+                    jpeg1 = widgets.Button(description="JPEG", icon = 'fa-bar-chart', layout=Layout(width=ancho_plot_save+'px'))
+                    jpeg1.style.button_color = 'gold'
+                    output2 = widgets.Output()
+                    def button_clicked2(b):
+                        with output2:
+                            clear_output(True)
+                            if filename_plot.value is '':
+                                nombre_grafico = 'Richness_chart_'+datetime.datetime.now().strftime('%d.%B.%Y_%I-%M%p')
+                            if filename_plot.value is not '':
+                                nombre_grafico = filename_plot.value
+
+                            fig.savefig('plots_otu/richness/'+nombre_grafico+'.jpeg', dpi = 900, bbox_inches= 'tight')
+
+                    jpeg1.on_click(button_clicked2)
+                    #----
+                    svg1 = widgets.Button(description="SVG", icon = 'fa-bar-chart', layout=Layout(width=ancho_plot_save+'px'))
+                    svg1.style.button_color = 'gold'
+                    output3 = widgets.Output()
+                    def button_clicked3(b):
+                        with output3:
+                            clear_output(True)
+                            if filename_plot.value is '':
+                                nombre_grafico = 'Richness_chart_'+datetime.datetime.now().strftime('%d.%B.%Y_%I-%M%p')
+                            if filename_plot.value is not '':
+                                nombre_grafico = filename_plot.value
+
+                            fig.savefig('plots_otu/richness/'+nombre_grafico+'.svg', dpi = 900, bbox_inches= 'tight')
+
+                    svg1.on_click(button_clicked3)
+                    #----
+                    pdf1 = widgets.Button(description="PDF", icon = 'fa-bar-chart', layout=Layout(width=ancho_plot_save+'px'))
+                    pdf1.style.button_color = 'gold'
+                    output4 = widgets.Output()
+                    def button_clicked4(b):
+                        with output4:
+                            clear_output(True)
+                            if filename_plot.value is '':
+                                nombre_grafico = 'Richness_chart_'+datetime.datetime.now().strftime('%d.%B.%Y_%I-%M%p')
+                            if filename_plot.value is not '':
+                                nombre_grafico = filename_plot.value
+
+                            fig.savefig('plots_otu/richness/'+nombre_grafico+'.pdf', dpi = 900, bbox_inches= 'tight')
+
+                    pdf1.on_click(button_clicked4)
+                    ### ---
+
+
+
+                    def show_rampa(colores3):
+                        patron = colores3.split('_v')[0]
+                        barcolor_v1(lista1 = colores[patron], lista2 = diccionarios_colores[len(VariablE_orderned)][colores3])
+                    OUTshow_rampa = widgets.interactive_output(show_rampa, {'colores3':colores3})
+
+
+                    def boxrampas3(colores3, ancho, alto, alfa_box, markers_point, marker_color, marker_size, marker_alfa,
+                                   label_X, ticklabels_X, label_Y, family_axis, rotation):
+
+                        def set_locus():
+
+                            fig.set_size_inches((cor_size2[ancho], cor_size2[alto]))
+
+                            [i.set_facecolor(c) for i, c in zip(AX3.artists, diccionarios_colores[len(VariablE_orderned)][colores3])]
+
+                            #limy = AX3.get_ylim()[1] + (AX3.get_ylim()[1] * 0.05)
+
+                            #labels_Y = AX3.get_yticks()
+
+                            # configuracion del scatter
+                            for i in AX3.collections:
+                                i.set_paths([marcas[{'⏺':'o', '⏹':'s'}[markers_point]]]) # forma de puntos
+                            for i in AX3.collections:
+                                i.set_alpha(marker_alfa) # alfa de puntos
+                            for i in AX3.collections:
+                                i.set_sizes([marker_size]) # size de puntos
+
+                            for i in AX3.collections:
+                                i.set_color(marker_color) # alfa de puntos
+
+
+
+
+                            [i.set_alpha(alfa_box) for i in AX3.artists]
+
+                            #[i.set_alpha(alfa_box) for i in AX3.artists]
+
+
+                            # EJES
+
+                            [i.set_fontsize(ticklabels_X) for i in AX3.xaxis.get_ticklabels()]
+                            [i.set_fontsize(ticklabels_Y) for i in AX3.yaxis.get_ticklabels()]
+
+                            [tickx.label.set_fontfamily([family_axis]) for tickx in AX3.xaxis.get_major_ticks()]
+                            [tickx.label.set_fontfamily([family_axis]) for tickx in AX3.yaxis.get_major_ticks()]
+
+                            AX3.xaxis.get_label().set_fontsize(label_X)
+                            AX3.yaxis.get_label().set_fontsize(label_Y)
+                            AX3.xaxis.get_label().set_fontfamily([family_axis])
+                            AX3.yaxis.get_label().set_fontfamily([family_axis])
+
+
+
+                            [i.set_rotation(rotation) for i in AX3.get_xticklabels()]
+
+                            display(fig)
+
+
+
+                        set_locus()
+
+                    OUTboxrampas3 = widgets.interactive_output(boxrampas3, {'colores3':colores3, 'ancho':ancho, 'alto':alto, 'alfa_box':alfa_box,
+                                                                            'markers_point':markers_point, 'marker_color':marker_color, 'marker_size':marker_size,
+                                                                             'marker_alfa':marker_alfa, 'label_X':label_X, 'ticklabels_X':ticklabels_X, 'label_Y':label_Y,
+                                                                             'family_axis':family_axis, 'rotation':rotation})            
+
+
+                    #------------------------------------
+                    items_save_1 = VBox([HBox([widgets.HTML('<font color = grey> <b style="font-size:0.7vw">SAVE CHART: </b>'), blanca, filename_plot]),
+                                         HBox([blanca, widgets.Label('Formats:'), png1, jpeg1, svg1, pdf1])])
+                    items_save_1_box = Box(children=[items_save_1], layout=Layout(border='1px solid gainsboro', width='410px', height=str(int(len(items_save_1.children) * 34))+'px'))
+
+
+                    display(HBox([VBox([HBox([tipo_elemento_box, VBox([widgets.HTML('<font color = grey> <b style="font-size:0.7vw">BOX COLORS</b>'), colores3]),
+                                                           VBox([OUTshow_rampa]), VBox([items_save_1_box])]), OUTboxrampas3, output4])]))
+                
+                
+                out_updata_plotttt = widgets.interactive_output(updata_plottt, {'tipo_elemento':tipo_elemento, 'ticklabels_Y':ticklabels_Y, 'width_box':width_box,
+                                                                                'SignificanciA':SignificanciA, 'mostrat_SignificanciA':mostrat_SignificanciA})
+                
+                display(out_updata_plotttt)
+                
+                        
+        out_updata_plot = widgets.interactive_output(updata_plot, {'tipo_kits_1':tipo_kits_1, 'IndicE':IndicE, 'VariablE':VariablE, 'VariablE2':VariablE2}) 
+        
+        items_plot_1 = VBox([ancho,
+                             alto,
+                             width_box,
+                             alfa_box,
+                             HBox([blanca, widgets.Label('Marker color:'), marker_color, widgets.Label('Marker:'), markers_point]),
+                             marker_size,
+                             marker_alfa])
+        
+        items_plot_1_box = Box(children=[items_plot_1], layout=Layout(border='1px solid gainsboro', width='410px', height=str(int(len(items_plot_1.children) * 31))+'px'))
+        
+        significancia_box = Box(children=[HBox([SignificanciA, mostrat_SignificanciA])], layout=Layout(border='1px solid gainsboro', width='410px', height='38px'))
+        
+        items_axis_1 = VBox([label_X, ticklabels_X, label_Y, ticklabels_Y, HBox([blanca, widgets.Label('Axis font:'), family_axis]), HBox([widgets.Label('X tick rotation:'), rotation])])
+        items_axis_1_box = Box(children=[items_axis_1], layout=Layout(border='1px solid gainsboro', width='410px', height=str(int(len(items_axis_1.children) * 31))+'px'))
+        
+        
+        
+        items_data = [widgets.HTML('<font color = grey> <b style="font-size:0.7vw">'+i+'</b>') for i in 'DATA']
+        items_axis = [widgets.HTML('<font color = grey> <b style="font-size:0.7vw">'+i+'</b>') for i in 'AXIS']
+        items_save = [widgets.HTML('<font color = white> <b style="font-size:0.7vw">'+i+'</b>') for i in 'S']
+        
+        
+        RichnesS = HBox([HBox([VBox([widgets.HTML('<font color = #1976d2> <b style="font-size:0.8vw">KITS</b>'), tipo_kit_1_box,
+                               widgets.HTML('<font color = grey> <b style="font-size:0.8vw">INDICES</b>'), tipo_indice_box]),
+                               VBox([widgets.HTML('<font color = grey> <b style="font-size:0.8vw">FIXED VARIABLE</b>'), tipo_variable_box,
+                                     widgets.HTML('<font color = grey> <b style="font-size:0.8vw">FLEXIBLE VARIABLE</b>'), tipo_variable_box2])]),
+                         
+                         
+                         blanca,
+                         VBox([widgets.HTML('<font color = grey> <i class="fa fa-cog fa-2x fa-fw"></i> <b style="font-size:0.8vw">PLOT SETTINGS</b>'),
+                               
+                               HBox([Box(children =[VBox(items_save)]), significancia_box]),
+                               
+                              HBox([Box(children =[VBox(items_data)]), items_plot_1_box]),
+                             
+                              HBox([Box(children =[VBox(items_axis)]), items_axis_1_box])
+                              
+                              ]),
+                       blanca, VBox([out_updata_plot])])
+        
+        
+        display(RichnesS)
+        
+RICHNESS2_button.on_click(button_clicked)
+
+
+
+
+
+RICHNESS2_CALCULATIONS = VBox([RICHNESS2_button, RICHNESS2_output])
+
+###################################################################
+###################################################################
+###################################################################
 
 
 
@@ -5532,6 +6053,486 @@ TAXONOMY_ANALYSIS = VBox([HBox([TAXONOMY_button, uno]), TAXONOMY_output])
 
 
 
+###################################################################
+###################################################################
+###################################################################
+
+
+TAXonomy_button = widgets.Button(description="PROCESS AND VISUALIZE", icon = 'fa-eye', layout=Layout(width='590px'))
+TAXonomy_button.style.button_color = 'gainsboro'
+TAXonomy_button.style.font_weight = 'bold'
+TAXonomy_output = widgets.Output()
+
+def button_clicked(b):
+    
+    sumary111 = []
+    uno = open('plots_otu/taxonomy/AAAbundancEEE.txt', 'r')
+    for enu, line in enumerate(uno):
+        line = line.rstrip()
+        if enu == 0:
+            header = line.split('\t')
+        else:
+            sumary111.append(line.split('\t'))
+    uno.close()
+    sumary2 = DataFrame(sumary111, columns = ['Name Sample'] + header[1:])
+    sumary2 = sumary2.set_index('Name Sample')
+    sumary2 = sumary2.astype('float64')
+    sumary2 = sumary2.sort_index(ascending=True)
+
+    with open('plots_otu/taxonomy/dict_variable_element_colors.json', 'r') as fp:
+        dict_variable_element_colors = json.load(fp)
+    with open('plots_otu/taxonomy/dict_para_salvar.json', 'r') as fp:
+        CorrepondenciA = json.load(fp)
+        
+    if 'None' in list(dict_variable_element_colors.keys()):
+        VVAARRSS = {}
+        for i in sumary2.index:
+            VVAARRSS[i] = [i]
+        metavar = DataFrame([VVAARRSS[i] for i in sumary2.index], columns = ['Name Sample'])
+    else:
+        VVAARRSS = {}
+        for i in sumary2.index:
+            meta = []
+            for k in list(dict_variable_element_colors.keys()):
+                meta.append(correspondencia_sam_vars[i][k])
+            VVAARRSS[i] = [i] + meta
+        metavar = DataFrame([VVAARRSS[i] for i in sumary2.index], columns = ['Name Sample'] + list(dict_variable_element_colors.keys()))
+
+    with TAXonomy_output:
+        clear_output(True)
+        
+        permitidos = []
+        for j in dict_variable_element_colors:
+            if len(dict_variable_element_colors[j]) <= 4:
+                permitidos.append(j)
+        
+        var_elegida = widgets.HTML()
+        qwer = widgets.HTML()
+        
+        tipo_var = widgets.ToggleButtons(options= permitidos, value = permitidos[0], button_style = 'warning')
+        tipo_var.style.button_width = '170px'
+        cuenta = 31 * len(permitidos)
+        tipo_var_box = Box(children=[VBox([tipo_var])], layout=Layout(border='1px solid #ff9800', width='180px', height= str(cuenta)+'px'))
+        
+        fig_size = []
+        n = 1
+        for i in range(56):
+            fig_size.append(round(n, 2))
+            n += 0.1
+        
+        
+        tam_plot1_w = widgets.SelectionSlider(options=fig_size,value=3,disabled=False,
+                                              description = 'Chart width:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                           layout=Layout(width='400px', height='25px'))
+        tam_plot1_h = widgets.SelectionSlider(options=fig_size,value=3,disabled=False,
+                                              description = 'Chart height:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                           layout=Layout(width='400px', height='25px'))
+        
+        espacio = []
+        n = 0
+        for i in range(61):
+            espacio.append(round(n, 2))
+            n += 0.1
+        bar_espacio = widgets.SelectionSlider(options=espacio,value=2,disabled=False,
+                                              description = 'Space:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                           layout=Layout(width='400px', height='25px'))
+        
+        
+        var_label = widgets.SelectionSlider(options=range(5, 16),value=8,disabled=False,
+                                              description = 'Variable:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                            layout=Layout(width='400px', height='25px'))
+        ticklabels_Y = widgets.SelectionSlider(options=range(5, 16),value=9,disabled=False,
+                                              description = 'Sample:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                            layout=Layout(width='400px', height='25px'))
+    
+        legend_tax = widgets.SelectionSlider(options=range(5, 16),value=8,disabled=False,
+                                              description = 'Tax legend:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                            layout=Layout(width='400px', height='25px'))
+
+        legend_var = widgets.SelectionSlider(options=range(5, 16),value=8,disabled=False,
+                                              description = 'Legend:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                            layout=Layout(width='400px', height='25px'))
+        text_top = widgets.SelectionSlider(options=range(5, 16),value=10,disabled=False,
+                                              description = 'Top axis:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                            layout=Layout(width='400px', height='25px'))
+        
+        num_cols = widgets.ToggleButtons(options=[1, 2, 3, 4, 5, 6], value = 2)
+        num_cols.style.button_width = '25px'
+
+        cambiar_sample = widgets.ToggleButtons(options=['Code1', 'Code2', 'Code3'], value = 'Code1')
+        cambiar_sample.style.button_width = '75px'
+
+        despazamientoX = {}
+        n = 1.1
+        for e, i in enumerate(range(100)):
+            despazamientoX[e+1] = round(n, 3)
+            n += 0.01
+
+        desplazamiento_x = widgets.SelectionSlider(options=list(despazamientoX.keys()),value= 61,disabled=False,
+                                                      description = 'Tax Xpos:',
+                                                continuous_update=False,orientation='horizontal',readout=True,
+                                                   layout=Layout(width='400px', height='25px'))
+
+        despazamientoY = {}
+        n = 0.5
+        for e, i in enumerate(range(100)):
+            despazamientoY[e+1] = round(n, 3)
+            n += 0.01
+
+        desplazamiento_y = widgets.SelectionSlider(options=list(despazamientoY.keys()),value= 61,disabled=False,
+                                                      description = 'Tax Ypos:',
+                                                continuous_update=False,orientation='horizontal',readout=True,
+                                                   layout=Layout(width='400px', height='25px'))
+        
+        intervalosY = []
+        n = 0
+        for i in range(26):
+            intervalosY.append(round(n, 2))
+            n += 0.02
+
+        y_pos_leyendas = widgets.SelectionSlider(options=intervalosY, value= 0.1,disabled=False,
+                                                      description = 'Interval:', continuous_update=False,orientation='horizontal',readout=True,
+                                                    layout=Layout(width='400px', height='25px'))
+        
+        filename_plot = widgets.Text(value='', placeholder='Chart name', description='', disabled=False, layout = Layout(width='270px', height='25px'))
+        
+        
+        def updata_plot(tipo_var):
+            
+            tipo_elemento = widgets.ToggleButtons(options= list(dict_variable_element_colors[tipo_var].keys()), value = list(dict_variable_element_colors[tipo_var].keys())[0], button_style = '')
+            tipo_elemento.style.button_width = '170px'
+            cuenta = 32 * len(list(dict_variable_element_colors[tipo_var].keys()))
+            tipo_elemento_box = Box(children=[VBox([tipo_elemento])], layout=Layout(border='1px solid white', width='180px', height= str(cuenta)+'px'))
+            
+            
+            
+            def updata_plot2(tipo_elemento, tam_plot1_w, tam_plot1_h, bar_espacio, var_label, ticklabels_Y, legend_tax, legend_var, text_top,
+                             num_cols, cambiar_sample, desplazamiento_x, desplazamiento_y, y_pos_leyendas):
+            
+                variable_ELEGIDA = tipo_var
+                ELEGIDA = tipo_elemento
+                
+                var_elegida.value = '</b> <font color = #ff9800> <b style="font-size:0.5vw"> Variable: </font> <font color = black>'+variable_ELEGIDA+'</b></font>'
+                #print('Variable:', variable_ELEGIDA)
+                
+                if 'None' in list(dict_variable_element_colors.keys()):
+                    sumary222 = sumary2
+                else:
+                    sumary222 = sumary2[sumary2.index.str.contains('|'.join(metavar[metavar[variable_ELEGIDA] == ELEGIDA]['Name Sample'].tolist())) == True]
+                
+                for i in sumary222.columns:
+                    if len(sumary222[[i]][sumary222[i] > 0]) == 0:
+                        sumary222 = sumary222.drop(columns = i)
+                    else:
+                        pass
+                mues = {}
+                for indi in sumary222.index:
+                    df = sumary222[sumary222.index == indi]
+                    df= df[df > 0].dropna(axis=1)
+                    """
+                    ordenada
+                    """
+                    mues[indi] = dict(OrderedDict(Counter(dict(zip(df.columns, df.values[0]))).most_common()))
+                
+                NEW_metavar = metavar[metavar[variable_ELEGIDA] == ELEGIDA]
+                limite = 100
+                inters = bar_espacio
+                inters_sum = (len(sumary222) + 1) * inters
+                bar_width = (limite - inters_sum) / len(sumary222)
+                radio = bar_width/2
+                centros_circles = {}
+                pos_inters = inters
+                for i in sumary222.index:
+                    centros_circles[i] = pos_inters + radio
+                    pos_inters += (inters + bar_width)
+                
+                aumento = 0.01
+                
+                text_samples = ticklabels_Y
+                family_axis = "Open Sans"
+                
+                
+                mpl.rcParams.update(mpl.rcParamsDefault)
+
+                tam_W, tam_H = tam_plot1_w, tam_plot1_h
+
+                fig = plt.figure(figsize = (tam_W, tam_H))
+
+                ax1 = fig.add_axes([0, 0, 1, 0.5])
+                ax1.set_facecolor('none')
+                ax1.set_xlim([0, limite])
+                ax1.set_ylim([0, limite])
+
+                for cc in mues:# x1     y1        x2      y2
+                    n = 0
+                    for i, t in zip(list(mues[cc].values()), list(mues[cc].keys())):
+                        ax1.add_patch(Rectangle((n, centros_circles[cc]-radio), i, bar_width, fc =CorrepondenciA[t],  ec ='white', lw = 0))
+                        n += i
+
+                for d in [25, 50, 75]:
+                    Lista = list(range(0, 100))
+                    ax1.plot(np.repeat(d, 100+1),np.array(Lista+[Lista[-1]+3]), 
+                             marker='o', markeredgewidth=0, zorder=0, linestyle='-',
+                                         markersize=0, color='black', linewidth=0.3, alpha = 1)
+                plt.xticks([25, 50, 75, 100], ['25', '50', '75', '100'], size= text_top-1, rotation=0, ha = 'right')
+
+                ax1.set_xlabel('') # ('Relative abundance (%)', fontsize= xlabel, fontname="Open Sans", weight = 'bold')
+                ax1.set_yticklabels([])
+
+
+
+                ax1.tick_params(bottom=False, right=False, top=True, left=False, width = 0.3, length=3, color='black')
+
+                plt.gca().spines['left'].set_color(None)
+                plt.gca().spines['bottom'].set_color(None)
+                plt.gca().spines['right'].set_color(None)
+                plt.gca().spines['top'].set_color(None)
+
+                proxies = []
+                for cat in sumary222.columns:
+                    proxy = mpl.lines.Line2D([0], [0], linestyle='',
+                                             c=CorrepondenciA[cat], marker='s', alpha = 1,
+                                             markersize = 5,
+                                             markeredgecolor=CorrepondenciA[cat], linewidth = 0)
+                    proxies.append(proxy)
+
+                ax1.legend(proxies, list(CorrepondenciA.keys()), title= "$\\bf{"+CorrepondenciA['Linaje']+"}$", title_fontsize = legend_tax, numpoints=1, loc=2, ncol = num_cols,
+                          handletextpad=0.7, handlelength = 0.3, labelspacing = 0.5, columnspacing = 1,
+                                   borderpad = 0.5, edgecolor="none", prop={'style':'italic', 'size': legend_tax},
+                                  bbox_to_anchor=(despazamientoX[desplazamiento_x], despazamientoY[desplazamiento_y]))
+
+
+                if 'None' in list(dict_variable_element_colors.keys()):
+                    ax1.set_xlabel('Relative abundance (%)', fontsize= text_top, fontname="Open Sans", weight = 'bold')
+                else:
+                    ax1.xaxis.set_ticks_position("top")
+                    ax1.set_title('Relative abundance (%)', fontsize= text_top, fontname="Open Sans", weight = 'bold')
+
+
+
+
+
+                ##########
+
+                ax2 = fig.add_axes([1 + aumento, 0, 1.25, 0.5])
+                ax2.set_facecolor('none')
+                ax2.set_xlim([0, limite*(tam_W/tam_H)*1.25])
+                ax2.set_ylim([0, limite])
+
+                factor1 = tam_W/(tam_H)
+                factor2 = ax2.get_xlim()[1]/ax2.get_ylim()[1]
+                factor3 = radio*factor1*factor2
+
+                pos_variable_title = {}
+                num = (radio/2)*1.2
+                QWER = []
+                for i in dict_variable_element_colors:
+                    if 'None' in list(dict_variable_element_colors.keys()):
+                        pos_variable_title[i] = num
+                        num += 0 
+                    else:
+                        if len(set(NEW_metavar[[i]][i].tolist())) == 1:
+                            QWER.append(NEW_metavar[[i]][i].tolist()[0])
+                            #print('Todas son:', NEW_metavar[[i]][i].tolist()[0])
+                            pass
+                        else:
+                            for e, cc in enumerate(mues):
+                                ax2.add_patch(Ellipse((num, centros_circles[cc]), bar_width/2, bar_width, angle= 0, linewidth=0, facecolor=dict_variable_element_colors[i][correspondencia_sam_vars[cc][i]], zorder=1, alpha = 1, label = i))
+                            pos_variable_title[i] = num
+                            num += (radio*1.1)
+                qwer.value = '(All are:  '+'  /  '.join(QWER)+')'
+                            
+
+                if 'None' in list(dict_variable_element_colors.keys()):
+                    pass
+                else:
+                    for VaR in pos_variable_title:
+                        ax2.text(pos_variable_title[VaR], 100, ' '+VaR, fontsize = var_label, color = 'black', ha='center', va = 'bottom', rotation=90, fontfamily = "Open Sans") 
+
+                for sam in centros_circles:
+                    if cambiar_sample == 'Code1':
+                        ax2.annotate(' '+sam, xy = (num + radio, centros_circles[sam]), xytext = (num - radio/2, centros_circles[sam]), xycoords = 'data', textcoords = 'data',
+                                        color = 'black', size = text_samples, ha='left', va = "center", fontfamily = family_axis,
+                                bbox = dict(boxstyle="Square", pad = 0.1, alpha = 0.1, fc = 'whitesmoke', ec = "none", url = 'https://www.ncbi.nlm.nih.gov/biosample/?term='+sample_BioSample[sam]))
+                    if cambiar_sample == 'Code2':
+                        ax2.annotate(' '+name_code[sam], xy = (num + radio, centros_circles[sam]), xytext = (num - radio/2, centros_circles[sam]), xycoords = 'data', textcoords = 'data',
+                                        color = 'black', size = text_samples, ha='left', va = "center", fontfamily = family_axis,
+                                bbox = dict(boxstyle="Square", pad = 0.1, alpha = 0.1, fc = 'whitesmoke', ec = "none", url = 'https://www.ncbi.nlm.nih.gov/biosample/?term='+sample_BioSample[sam]))
+                    if cambiar_sample == 'Code3':
+                        ax2.annotate(' '+name_code2[sam], xy = (num + radio, centros_circles[sam]), xytext = (num - radio/2, centros_circles[sam]), xycoords = 'data', textcoords = 'data',
+                                        color = 'black', size = text_samples, ha='left', va = "center", fontfamily = family_axis,
+                                bbox = dict(boxstyle="Square", pad = 0.1, alpha = 0.1, fc = 'whitesmoke', ec = "none", url = 'https://www.ncbi.nlm.nih.gov/biosample/?term='+sample_BioSample[sam]))    
+
+
+                ly = 0
+                leyendas = []
+                for cat in dict_variable_element_colors:
+                    if len(set(NEW_metavar[[cat]][cat].tolist())) == 1:
+                        pass
+                    else:
+                        labels = []
+                        proxies = []
+
+                        proxyy = mpl.lines.Line2D([0], [0], linestyle='none',
+                                                     c='black', marker='', alpha = 1,
+                                                     markersize = 5, 
+                                                     markeredgecolor='black', linewidth = 0)
+                        proxies.append(proxyy)
+                        labels.append(' '.join(["$\\bf{"+i+"}$" for i in cat.split(' ')])+':') # separar las palabras para editar cada una
+
+                        for vari in dict_variable_element_colors[cat]:
+                            if vari in NEW_metavar[cat].tolist():
+                                proxy = mpl.lines.Line2D([0], [0], linestyle='none',
+                                                         c=dict_variable_element_colors[cat][vari], marker='o', alpha = 1,
+                                                         markersize = 3,
+                                                         markeredgecolor=dict_variable_element_colors[cat][vari], linewidth = 0)
+                                labels.append(vari)
+                                proxies.append(proxy)
+                            else:
+                                pass
+
+
+                        leg = ax2.legend(proxies, labels, title_fontsize = 8, numpoints=1, loc=2, ncol = len(labels), facecolor = 'none',
+                                  handletextpad=0.7, handlelength = 0.3, labelspacing = 0, columnspacing = 1.5,
+                                           borderpad = 0.13, edgecolor="none", prop={'size':legend_var},
+                                          bbox_to_anchor=(-0.85, ly)) 
+
+                        leyendas.append(leg)
+                        ly -= y_pos_leyendas
+
+
+
+                for l in leyendas:
+                    ax2.add_artist(l)        
+
+
+
+                ax2.axis('off')
+
+
+                plt.close()
+                
+                
+                # --- save
+                ancho_plot_save = str(71)
+                png1 = widgets.Button(description="PNG", icon = 'fa-bar-chart', layout=Layout(width=ancho_plot_save+'px'))
+                png1.style.button_color = 'gold'
+                output1 = widgets.Output()
+                def button_clicked1(b):
+                    with output1:
+                        clear_output(True)
+                        if filename_plot.value is '':
+                            nombre_grafico = 'Taxonomy_chart_'+datetime.datetime.now().strftime('%d.%B.%Y_%I-%M%p')
+                        if filename_plot.value is not '':
+                            nombre_grafico = filename_plot.value
+                        fig.savefig('plots_otu/taxonomy/'+nombre_grafico+'.png', dpi = 900, bbox_inches= 'tight')
+
+                png1.on_click(button_clicked1)
+                #----
+                jpeg1 = widgets.Button(description="JPEG", icon = 'fa-bar-chart', layout=Layout(width=ancho_plot_save+'px'))
+                jpeg1.style.button_color = 'gold'
+                output3 = widgets.Output()
+                def button_clicked3(b):
+                    with output3:
+                        clear_output(True)
+                        if filename_plot.value is '':
+                            nombre_grafico = 'Taxonomy_chart_'+datetime.datetime.now().strftime('%d.%B.%Y_%I-%M%p')
+                        if filename_plot.value is not '':
+                            nombre_grafico = filename_plot.value
+                        fig.savefig('plots_otu/taxonomy/'+nombre_grafico+'.jpeg', dpi = 900, bbox_inches= 'tight')
+
+                jpeg1.on_click(button_clicked3)
+                #----
+                svg1 = widgets.Button(description="SVG", icon = 'fa-bar-chart', layout=Layout(width=ancho_plot_save+'px'))
+                svg1.style.button_color = 'gold'
+                output2 = widgets.Output()
+                def button_clicked2(b):
+                    with output2:
+                        clear_output(True)
+                        if filename_plot.value is '':
+                            nombre_grafico = 'Taxonomy_chart_'+datetime.datetime.now().strftime('%d.%B.%Y_%I-%M%p')
+                        if filename_plot.value is not '':
+                            nombre_grafico = filename_plot.value
+                        fig.savefig('plots_otu/taxonomy/'+nombre_grafico+'.svg', dpi = 900, bbox_inches= 'tight')
+
+                svg1.on_click(button_clicked2)
+                #----
+                pdf1 = widgets.Button(description="PDF", icon = 'fa-bar-chart', layout=Layout(width=ancho_plot_save+'px'))
+                pdf1.style.button_color = 'gold'
+                output4 = widgets.Output()
+                def button_clicked4(b):
+                    with output4:
+                        clear_output(True)
+                        if filename_plot.value is '':
+                            nombre_grafico = 'Taxonomy_chart_'+datetime.datetime.now().strftime('%d.%B.%Y_%I-%M%p')
+                        if filename_plot.value is not '':
+                            nombre_grafico = filename_plot.value
+                        fig.savefig('plots_otu/taxonomy/'+nombre_grafico+'.pdf', dpi = 900, bbox_inches= 'tight')
+
+                pdf1.on_click(button_clicked4)
+                #----
+                
+                items_save_1 = VBox([HBox([widgets.HTML('<font color = grey> <b style="font-size:0.7vw">SAVE CHART: </b>'), blanca, filename_plot]),
+                                     HBox([blanca, widgets.Label('Formats:'), png1, jpeg1, svg1, pdf1])])
+                items_save_1_box = Box(children=[items_save_1], layout=Layout(border='1px solid gainsboro', width='410px', height=str(int(len(items_save_1.children) * 34))+'px'))
+                
+                display(HBox([blanca, items_save_1_box]))
+                                     
+                display(fig)
+                
+                
+                
+                
+            
+            out_updata_plot2 = widgets.interactive_output(updata_plot2, {'tipo_elemento':tipo_elemento, 'tam_plot1_w':tam_plot1_w, 'tam_plot1_h':tam_plot1_h, 'bar_espacio':bar_espacio,
+                                                                         'var_label':var_label, 'ticklabels_Y':ticklabels_Y, 'legend_tax':legend_tax, 'legend_var':legend_var,
+                                                                         'text_top':text_top, 'num_cols':num_cols, 'cambiar_sample':cambiar_sample,
+                                                                         'desplazamiento_x':desplazamiento_x, 'desplazamiento_y':desplazamiento_y, 'y_pos_leyendas':y_pos_leyendas})
+            
+            items_plot_1 = VBox([tam_plot1_w,
+                                 tam_plot1_h,
+                                 bar_espacio,
+                                 var_label,
+                                 ticklabels_Y,
+                                 legend_tax,
+                                 legend_var,
+                                 text_top,
+                                 HBox([blanca, widgets.Label('Columns:'), num_cols]),
+                                 HBox([blanca, widgets.Label('Rename:'), cambiar_sample]),
+                                 desplazamiento_x,
+                                 desplazamiento_y,
+                                 y_pos_leyendas])
+            
+            display(HBox([VBox([widgets.HTML('<font color = grey> <b style="font-size:0.8vw">VARIABLES</b>'), tipo_var_box,
+                                widgets.HTML('<font color = grey> <b style="font-size:0.8vw">ITEMS</b>'), tipo_elemento_box]),
+                          items_plot_1,
+                          VBox([HBox([blanca, var_elegida, qwer]), out_updata_plot2])]))
+        
+        out_updata_plot = widgets.interactive_output(updata_plot, {'tipo_var':tipo_var})
+        
+        display(out_updata_plot)
+        
+    
+        
+TAXonomy_button.on_click(button_clicked)
+TAXonOMY_FRAGMENTED = VBox([TAXonomy_button, TAXonomy_output])
+
+###################################################################
+###################################################################
+###################################################################
+
+
+
+
+
 
 
 
@@ -8114,14 +9115,16 @@ BETA_DIVERSITY_PHYL = VBox([HBox([BETA_PHY_button, estatico_fil_box]), BETA_PHY_
 
 
 
-graficas = {'Rarefaction Analysis': RARE_ANALYSIS,
+graficas = {'Rarefaction': RARE_ANALYSIS,
             'Alpha Diversity': DIVERSITY_CALCULATIONS,
             'Richness': RICHNESS_CALCULATIONS,
+            'Richness Split':RICHNESS2_CALCULATIONS,
             'Taxonomy': TAXONOMY_ANALYSIS,
-            'Beta Diversity (No phylogenetic)': BETA_DIVERSITY_NO_PHYL,
-            'Beta Diversity (Phylogenetic)': BETA_DIVERSITY_PHYL}
-exe = widgets.ToggleButtons(options=list(graficas.keys()),disabled=False,button_style='warning')
-exe.style.button_width = '258px'
+            'Taxonomy Split': TAXonOMY_FRAGMENTED,
+            'Beta Diversity (No phyl.)': BETA_DIVERSITY_NO_PHYL,
+            'Beta Diversity (Phyl.)': BETA_DIVERSITY_PHYL}
+exe = widgets.ToggleButtons(options=list(graficas.keys()),disabled=False,button_style='info')
+exe.style.button_width = '190px'
 exe.style.font_weight = 'bold'
 
 
@@ -8132,7 +9135,7 @@ box_exe = Layout(display='flex',
                     flex_flow='column',
                     align_items='stretch',
                     border='5px solid gainsboro',
-                    width='1700px',
+                    width='1900px',
                    height='45px')
 
 
@@ -8148,47 +9151,12 @@ RESULTS_16S = VBox([Box(children = [HBox([widgets.HTML('<b style="font-size:0.9v
 
 
 
-threshold_box = Box(children=[VBox([blanca2, threshold])], layout=Layout(border='5px solid beige', width='1700px', height='140px'))
+threshold_box = Box(children=[VBox([blanca2, threshold])], layout=Layout(border='5px solid beige', width='1900px', height='140px'))
 
 
 
 
 
 METAGENOMIC_16S_OTUs = VBox([threshold_box, blanca2, RESULTS_16S])
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
