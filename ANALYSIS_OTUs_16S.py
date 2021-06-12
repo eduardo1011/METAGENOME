@@ -7791,7 +7791,7 @@ def button_clicked(b):
                     blanca0.style.button_color = 'white'
 
                     # --- save
-                    html1 = widgets.Button(description="HTML", icon = 'fa-bar-chart', layout=Layout(width='71px'))
+                    html1 = widgets.Button(description="HTML", layout=Layout(width='71px'))
                     html1.style.button_color = 'gold'
                     output11 = widgets.Output()
                     def button_clicked11(b):
@@ -9020,7 +9020,7 @@ def button_clicked(b):
                     blanca0.style.button_color = 'white'
 
                     # --- save
-                    html1 = widgets.Button(description="HTML", icon = 'fa-bar-chart', layout=Layout(width='71px'))
+                    html1 = widgets.Button(description="HTML", layout=Layout(width='71px'))
                     html1.style.button_color = 'gold'
                     output11 = widgets.Output()
                     def button_clicked11(b):
