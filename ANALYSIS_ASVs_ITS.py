@@ -1753,12 +1753,16 @@ def button_clicked(b):
         
         fig_size = []
         n = 2
-        for i in range(16):
+        for i in range(31):
             fig_size.append(round(n, 2))
             n += 0.2
     
-        tam_plot1 = widgets.SelectionSlider(options=fig_size,value=3,disabled=False,
-                                              description = 'Chart size:',
+        ancho = widgets.SelectionSlider(options=fig_size,value=6,disabled=False,
+                                              description = 'Chart width:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                           layout=Layout(width='400px', height='25px'))
+        alto = widgets.SelectionSlider(options=fig_size,value=4,disabled=False,
+                                              description = 'Chart heigth:',
                                         continuous_update=False,orientation='horizontal',readout=True,
                                            layout=Layout(width='400px', height='25px'))
         
@@ -1798,7 +1802,7 @@ def button_clicked(b):
         
         # puntos
 
-        size_point = widgets.SelectionSlider(options=np.round(np.linspace(0, 1, 11), 2),value=0.5,disabled=False,
+        size_point = widgets.SelectionSlider(options=np.round(np.linspace(0, 1, 51), 2),value=0.5,disabled=False,
                                               description = 'Marker size:',
                                         continuous_update=False,orientation='horizontal',readout=True,
                                             layout=Layout(width='400px', height='25px'))
@@ -1936,7 +1940,8 @@ def button_clicked(b):
                     """
                     parametros = {'Kit:':tipo_kits_1.value,
                                   'Index:':tipo_indice.value,
-                                  'Chart size:':tam_plot1.value,
+                                  'Chart width:':ancho.value,
+                                  'Chart heigth:':alto.value,
                                   'Line width:':width_linea.value,
                                   'Line alpha:':alfa_linea.value,
                                   'Text size:':text_size.value,
@@ -1959,7 +1964,7 @@ def button_clicked(b):
         params.on_click(button_clicked5)
         #------------------------------------
         
-        def updata_plot(tipo_kits_1, tipo_indice, tam_plot1, width_linea, linea_color, text_size, text_color, text_alfa, alfa_linea, size_point, markers_point, alfa_marker, family1,
+        def updata_plot(tipo_kits_1, tipo_indice, ancho, alto, width_linea, linea_color, text_size, text_color, text_alfa, alfa_linea, size_point, markers_point, alfa_marker, family1,
                         label_X, ticklabels_X, label_Y, ticklabels_Y, family_axis, cambiar_sample, Multiple_colorS, ajustar_ejes):
             def set_locus():
                 
@@ -2007,7 +2012,7 @@ def button_clicked(b):
                 
                 
                 
-                fig2.set_size_inches((tam_plot1 * fig_per, tam_plot1)) # size plot
+                fig2.set_size_inches((ancho, alto)) # size plot
                 
                 AX2.clear()
                 AX2 = fig2.add_axes([0, 0, 1, 1])
@@ -2024,11 +2029,11 @@ def button_clicked(b):
                 AX2.add_line(line)
                 
                 width_f = size_point
-                factor1 = (tam_plot1*fig_per)/tam_plot1 # determina un primer factor a partir de las dimensiones del grafico x/y
-                factor2 = (AX2.get_ylim()[1] - AX2.get_ylim()[0])/AX2.get_xlim()[1] # determina un factor a partir de los limites de los ejes 'X' y 'Y'
-                factor3 = width_f*factor1*factor2 # producto de los factores mas el ancho o radio de las figuras
+                factor1 = abs(AX2.get_xlim()[0]) + AX2.get_xlim()[1]
+                factor2 = width_f/factor1
+                factor3 = ((AX2.get_ylim()[1] - AX2.get_ylim()[0])*factor2)*(ancho/alto)
                 
-                centroY = (AX2.get_ylim()[1] - AX2.get_ylim()[0]) / 2
+                centroY = ((AX2.get_ylim()[1] - AX2.get_ylim()[0]) / 2) + AX2.get_ylim()[0]
                 
                 ejexpos = []
                 labelx = []
@@ -2090,7 +2095,7 @@ def button_clicked(b):
             set_locus()
             
             
-        out_updata_plot = widgets.interactive_output(updata_plot, {'tipo_kits_1':tipo_kits_1, 'tipo_indice':tipo_indice, 'tam_plot1':tam_plot1,
+        out_updata_plot = widgets.interactive_output(updata_plot, {'tipo_kits_1':tipo_kits_1, 'tipo_indice':tipo_indice, 'ancho':ancho, 'alto':alto,
                                                                   'width_linea':width_linea, 'text_size':text_size, 'linea_color':linea_color, 'alfa_linea':alfa_linea,
                                                                    'size_point':size_point, 'markers_point':markers_point,
                                                                    'family1':family1, 'label_X':label_X, 'ticklabels_X':ticklabels_X,
@@ -2101,7 +2106,8 @@ def button_clicked(b):
         
         
         
-        items_plot_1 = VBox([tam_plot1,
+        items_plot_1 = VBox([ancho,
+                            alto,
                             width_linea,
                             alfa_linea,
                             text_size,
@@ -2157,7 +2163,461 @@ DIVERSITY_CALCULATIONS = VBox([PHY_DIV, IND_DIV])
 
 
 
+#`````````````````````````````````````````````````````````````````````````````````````````
+#`````````````````````````````````````````````````````````````````````````````````````````
+#`````````````````````````````````````````````````````````````````````````````````````````
 
+
+dict_METADATA = {}
+for i in variables_items_ordened:
+    df = metadata[['Name Sample', i]]
+    dv = {}
+    for j in variables_items_ordened[i]:
+        dv[j] = df[df[i] == j]['Name Sample'].tolist()
+    dict_METADATA[i] = dv
+    
+    
+INDICES2_button = widgets.Button(description="PROCESS AND VISUALIZE", icon = 'fa-eye', layout=Layout(width='590px'))
+INDICES2_button.style.button_color = 'gainsboro' #'deepskyblue'
+INDICES2_button.style.font_weight = 'bold'
+INDICES2_output = widgets.Output()
+
+def button_clicked(b):
+    
+    import os.path
+    from matplotlib.colors import ListedColormap # funcion para crear un objeto <matplotlib.colors.ListedColormap> a partir de una lista de colores personalizados
+    
+    if os.path.isfile('tablas/ASVs_PD.txt'):
+        PD  = pd.read_csv('tablas/ASVs_PD.txt', sep = '\t')
+        Indices = pd.read_csv('tablas/ASVs_Indices.txt', sep = '\t')
+        Indices = pd.concat([Indices, PD]).reset_index(drop = True)
+    else:
+        Indices = pd.read_csv('tablas/ASVs_Indices.txt', sep = '\t')
+    
+    with INDICES2_output:
+        clear_output(True)
+        
+        mpl.rcParams.update(mpl.rcParamsDefault)
+        fig2 = plt.figure(figsize=(6, 4))
+
+        AX2 = fig2.add_axes([0, 0, 1, 1])
+
+        AX2.set_facecolor('none')
+        
+        AX2.tick_params(bottom=True, right=False, top=False, left=True, width = 2, length=4, color='gainsboro')
+        plt.gca().tick_params(which='major', width = 2, length=4, color='gainsboro')
+        plt.gca().spines['left'].set_linewidth(2)
+        plt.gca().spines['bottom'].set_linewidth(2)
+        plt.gca().spines['left'].set_color('gainsboro')
+        plt.gca().spines['bottom'].set_color('gainsboro')
+        plt.gca().spines['right'].set_color(None)
+        plt.gca().spines['top'].set_color(None)
+        
+        
+        plt.close()
+        
+        
+        permitidos = []
+        for j in variables_items_ordened:
+            if len(variables_items_ordened[j]) <= 4:
+                permitidos.append(j)
+                
+        #variable fija
+        tipo_var = widgets.ToggleButtons(options= permitidos, value = permitidos[0], button_style = 'warning')
+        tipo_var.style.button_width = '170px'
+        cuenta = 31 * len(permitidos)
+        tipo_var_box = Box(children=[VBox([tipo_var])], layout=Layout(border='1px solid #ff9800', width='180px', height= str(cuenta)+'px'))
+        
+        
+        tipo_kits_1 = widgets.ToggleButtons(options= ['Both kits'] + metadata[VARIABLE_KIT].unique().tolist(), value = 'Both kits', button_style = 'primary')
+        tipo_kits_1.style.button_width = '170px'
+        tipo_kits_1.style.font_weight = 'bold'
+        tipo_kit_1_box = Box(children=[VBox([tipo_kits_1])], layout=Layout(border='1px solid #1976d2', width='180px', height='95px'))
+        
+        tipo_indice = widgets.ToggleButtons(options= list(reversed(list(dict(OrderedDict(Counter({i : len(i) for i in Indices.Index.tolist()}).most_common())).keys()))), value = 'Chao-1', button_style = '')
+        tipo_indice.style.button_width = '170px'
+        tipo_indice_box = Box(children=[VBox([tipo_indice])], layout=Layout(border='1px solid #1976d2', width='180px', height='380px'))
+        
+        Multiple_colorS = widgets.SelectMultiple(options=sorted(list(qualitative_colors.keys())), value=sorted(list(qualitative_colors.keys()))[0:5], disabled=False,
+                       layout=Layout(width='110px', height='250px'))
+        
+        fig_size = []
+        n = 1
+        for i in range(31):
+            fig_size.append(round(n, 2))
+            n += 0.2
+        
+        
+        ancho = widgets.SelectionSlider(options=fig_size,value=6,disabled=False,
+                                              description = 'Chart width:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                           layout=Layout(width='400px', height='25px'))
+        alto = widgets.SelectionSlider(options=fig_size,value=4,disabled=False,
+                                              description = 'Chart heigth:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                           layout=Layout(width='400px', height='25px'))
+        
+        
+        ## lineas
+        width_linea = widgets.SelectionSlider(options=width_line,value=3,disabled=False,
+                                              description = 'Line width:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                             layout=Layout(width='400px', height='25px'))
+        linea_color = widgets.ColorPicker(concise=True, value='black', disabled=False, layout = Layout(width='35px', height='25px'))
+        
+        
+        ## lineas
+        width_linea = widgets.SelectionSlider(options=width_line,value=2,disabled=False,
+                                              description = 'Line width:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                             layout=Layout(width='400px', height='25px'))
+        
+        linea_color = widgets.ColorPicker(concise=True, value='#c0c0c0', disabled=False, layout = Layout(width='35px', height='25px'))
+        
+        text_size = widgets.SelectionSlider(options=range(0, 31),value=10,disabled=False,
+                                              description = 'Text size:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                            layout=Layout(width='400px', height='25px'))
+        
+        text_color = widgets.ColorPicker(concise=True, value='#000000', disabled=False, layout = Layout(width='35px', height='25px'))
+        
+        
+        text_alfa = widgets.SelectionSlider(options=np.round(np.linspace(0, 1, 11), 2),value=1,disabled=False,
+                                              description = 'Text alpha:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                           layout=Layout(width='400px', height='25px'))
+        
+        alfa_linea = widgets.SelectionSlider(options=np.round(np.linspace(0, 1, 11), 2),value=1,disabled=False,
+                                              description = 'Line alpha:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                           layout=Layout(width='400px', height='25px'))
+        
+        # puntos
+
+        size_point = widgets.SelectionSlider(options=np.round(np.linspace(0, 1, 51), 2),value=0.5,disabled=False,
+                                              description = 'Marker size:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                            layout=Layout(width='400px', height='25px'))
+        #point_color = widgets.ColorPicker(concise=True, value='lime', disabled=False, layout = Layout(width='35px', height='25px'))
+        
+        #formas = {'Circle': 'o', 'Square': 'o'}
+        #markers_point = widgets.ToggleButtons(options=list(formas.keys()), value = 'Square')
+        
+        #markers_point = widgets.ToggleButtons(options=['⚫', '⬛'], value = '⚫')
+        #markers_point.style.button_width = '40px'
+        
+        markers_point = widgets.ToggleButtons(options=['⏺', '⏹'], value = '⏺')
+        markers_point.style.button_width = '31px'
+        
+        alfa_marker = widgets.SelectionSlider(options=np.round(np.linspace(0, 1, 11), 2),value=1,disabled=False,
+                                              description = 'Marker alpha:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                           layout=Layout(width='400px', height='25px'))
+        
+        
+        family = sorted(['Liberation Serif','Microsoft Sans Serif','Open Sans','Times New Roman','3ds Light','Calibri','Comic Sans MS',
+                          'Arial','Courier New','Microsoft Yi Baiti','Lucida Console'])
+        family1 = widgets.Dropdown(options = family, value = 'Open Sans', disabled = False,
+                                           layout = Layout(width='290px', height='25px'))
+        
+        ### ejes
+        label_X = widgets.SelectionSlider(options=range(5, 31),value=11,disabled=False,
+                                              description = 'X label:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                            layout=Layout(width='400px', height='25px'))
+        ticklabels_X = widgets.SelectionSlider(options=range(5, 31),value=10,disabled=False,
+                                              description = 'X tick labels:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                            layout=Layout(width='400px', height='25px'))
+
+        label_Y = widgets.SelectionSlider(options=range(5, 31),value=11,disabled=False,
+                                              description = 'Y label:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                            layout=Layout(width='400px', height='25px'))
+        ticklabels_Y = widgets.SelectionSlider(options=range(5, 31),value=10,disabled=False,
+                                              description = 'Y tick labels:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                            layout=Layout(width='400px', height='25px'))
+
+        family_axis = widgets.Dropdown(options = family, value = 'Open Sans', disabled = False,
+                                   layout = Layout(width='290px', height='25px'))
+        
+        cambiar_sample = widgets.ToggleButtons(options=['Code1', 'Code2', 'Code3'], value = 'Code1')
+        cambiar_sample.style.button_width = '70px'
+        
+        ajustar_ejes = widgets.ToggleButtons(options=['True', 'False'], value = 'False')
+        ajustar_ejes.style.button_width = '55px'
+        
+        #--------------------------
+        
+        filename_plot = widgets.Text(value='', placeholder='Chart name', description='', disabled=False, layout = Layout(width='270px', height='25px'))
+        
+        ancho_plot_save = str(71)
+         
+        png1 = widgets.Button(description="PNG", icon = 'fa-bar-chart', layout=Layout(width=ancho_plot_save+'px'))
+        png1.style.button_color = 'gold'
+        output1 = widgets.Output()
+        def button_clicked1(b):
+            with output1:
+                clear_output(True)
+                if filename_plot.value is '':
+                    nombre_grafico = 'Indices_chart_'+datetime.datetime.now().strftime('%d.%B.%Y_%I-%M%p')
+                if filename_plot.value is not '':
+                    nombre_grafico = filename_plot.value
+                fig2.savefig('plots_asv/indices/'+nombre_grafico+'.png', dpi = 900, bbox_inches= 'tight')
+                
+        png1.on_click(button_clicked1)
+        #----
+        jpeg1 = widgets.Button(description="JPEG", icon = 'fa-bar-chart', layout=Layout(width=ancho_plot_save+'px'))
+        jpeg1.style.button_color = 'gold'
+        output2 = widgets.Output()
+        def button_clicked2(b):
+            with output2:
+                clear_output(True)
+                if filename_plot.value is '':
+                    nombre_grafico = 'Indices_chart_'+datetime.datetime.now().strftime('%d.%B.%Y_%I-%M%p')
+                if filename_plot.value is not '':
+                    nombre_grafico = filename_plot.value
+                fig2.savefig('plots_asv/indices/'+nombre_grafico+'.jpeg', dpi = 900, bbox_inches= 'tight')
+                
+        jpeg1.on_click(button_clicked2)
+        #----
+        svg1 = widgets.Button(description="SVG", icon = 'fa-bar-chart', layout=Layout(width=ancho_plot_save+'px'))
+        svg1.style.button_color = 'gold'
+        output3 = widgets.Output()
+        def button_clicked3(b):
+            with output3:
+                clear_output(True)
+                if filename_plot.value is '':
+                    nombre_grafico = 'Indices_chart_'+datetime.datetime.now().strftime('%d.%B.%Y_%I-%M%p')
+                if filename_plot.value is not '':
+                    nombre_grafico = filename_plot.value
+                fig2.savefig('plots_asv/indices/'+nombre_grafico+'.svg', dpi = 900, bbox_inches= 'tight')
+                
+        svg1.on_click(button_clicked3)
+        #----
+        pdf1 = widgets.Button(description="PDF", icon = 'fa-bar-chart', layout=Layout(width=ancho_plot_save+'px'))
+        pdf1.style.button_color = 'gold'
+        output4 = widgets.Output()
+        def button_clicked4(b):
+            with output4:
+                clear_output(True)
+                if filename_plot.value is '':
+                    nombre_grafico = 'Indices_chart_'+datetime.datetime.now().strftime('%d.%B.%Y_%I-%M%p')
+                if filename_plot.value is not '':
+                    nombre_grafico = filename_plot.value
+                fig2.savefig('plots_asv/indices/'+nombre_grafico+'.pdf', dpi = 900, bbox_inches= 'tight')
+                
+        pdf1.on_click(button_clicked4)
+        
+        
+        def item_variable(tipo_var):
+            
+            tipo_elemento = widgets.ToggleButtons(options= variables_items_ordened[tipo_var], value = variables_items_ordened[tipo_var][0], button_style = '')
+            tipo_elemento.style.button_width = '170px'
+            cuenta = 32 * len(variables_items_ordened[tipo_var])
+            tipo_elemento_box = Box(children=[VBox([tipo_elemento])], layout=Layout(border='1px solid white', width='180px', height= str(cuenta)+'px'))
+ 
+        
+            def updata_plot(tipo_kits_1, tipo_indice, ancho, alto, width_linea, linea_color, text_size, text_color, text_alfa, alfa_linea, size_point, markers_point, alfa_marker, family1,
+                            label_X, ticklabels_X, label_Y, ticklabels_Y, family_axis, cambiar_sample, Multiple_colorS, ajustar_ejes, tipo_elemento):
+
+                
+                def set_locus():
+
+                    mpl.rcParams.update(mpl.rcParamsDefault)
+                    AX2 = fig2.add_axes([0, 0, 1, 1])
+
+                    if tipo_kits_1 == 'Both kits':
+                        ejeX = Indices[Indices.Index == tipo_indice][KITS['Both kits']].columns
+                        aumentoX = 0.08
+                    if tipo_kits_1 == 'DNPowerSoil':
+                        ejeX = Indices[Indices.Index == tipo_indice][KITS['DNPowerSoil']].columns
+                        aumentoX = 0.08
+                    if tipo_kits_1 == 'DNMicrobial':
+                        ejeX = Indices[Indices.Index == tipo_indice][KITS['DNMicrobial']].columns
+                        aumentoX = 0.08
+                    
+                    ejeX_new = []
+                    for i in dict_METADATA[tipo_var][tipo_elemento]:
+                        if i in ejeX:
+                            ejeX_new.append(i)
+                    
+                    ejeY = Indices[Indices.Index == tipo_indice][ejeX_new].values[0]
+                    val_max_y = max(ejeY)
+                    val_min_y = min(ejeY)
+                    
+                    
+                    
+                    rampa_creada = list(dict.fromkeys([to_hex(k) for i in Multiple_colorS for k in plt.get_cmap(i)(np.arange(qualitative_colors[i])/qualitative_colors[i])]))
+
+                    cuenta_colors_tax = HBox([blanca, widgets.Label('MARKER COLORS='+str(len(rampa_creada))+', '+'SAMPLES='+str(len(ejeX_new)))])
+
+                    if len(ejeX_new) <= len(rampa_creada):
+                        rampa_creada = rampa_creada[0:len(ejeX_new)]
+                    else:
+                        pass
+
+                    display(cuenta_colors_tax)
+
+                    cnorm = mpl.colors.Normalize(vmin=0, vmax=len(ejeX_new)-1)
+                    cpick = cm.ScalarMappable(norm=cnorm, cmap= ListedColormap(rampa_creada))
+                    ColormaP = [to_hex(cpick.to_rgba(e)) for e, i in enumerate(ejeX_new)]
+
+
+
+                    fig2.set_size_inches((ancho, alto)) # size plot
+
+                    AX2.clear()
+                    AX2 = fig2.add_axes([0, 0, 1, 1])
+
+                    AX2.set_xlim(-len(ejeY)*aumentoX, (len(ejeY)-1)+((len(ejeY)-1)*aumentoX))
+
+                    if ajustar_ejes == 'True':
+                        AX2.set_ylim(val_min_y - (val_max_y * 0.05), val_max_y + (val_max_y * 0.05)) # AX2.set_ylim(-val_max_y*0.015, val_max_y + (val_max_y * 0.05))
+                    if ajustar_ejes == 'False':
+                        AX2.set_ylim(0, val_max_y + (val_max_y * 0.05))
+
+
+                    line = mpl.lines.Line2D([e for e, i in enumerate(ejeX_new)], ejeY.tolist(), linewidth=width_linea, alpha=alfa_linea, color = linea_color, zorder=0)
+                    AX2.add_line(line)
+
+                    width_f = size_point
+                    factor1 = abs(AX2.get_xlim()[0]) + AX2.get_xlim()[1]
+                    factor2 = width_f/factor1
+                    factor3 = ((AX2.get_ylim()[1] - AX2.get_ylim()[0])*factor2)*(ancho/alto)
+                    
+                    
+                    centroY = ((AX2.get_ylim()[1] - AX2.get_ylim()[0]) / 2) + AX2.get_ylim()[0]
+                    
+
+                    ejexpos = []
+                    labelx = []
+                    for e, ejes in enumerate(zip(ejeX_new, ejeY, ColormaP)):
+                        if (ejes[1] % 1) == 0:
+                            valorY = int(ejes[1]) # numeros sin decimales son conviertidos a enteros
+                        else:
+                            valorY = round(ejes[1], 3)
+
+                        if markers_point == '⏺':
+                            AX2.add_patch(Ellipse((e, valorY), width_f, factor3, angle= 0, linewidth=0, facecolor= ejes[2], zorder=2, alpha = alfa_marker,
+                                                                      label = ejes[0], url = 'https://www.ncbi.nlm.nih.gov/biosample/?term='+sample_BioSample[ejes[0]]))
+                        if markers_point == '⏹':
+                            AX2.add_patch(Rectangle((e - (width_f/2), valorY - (factor3/2)), width_f, factor3, angle= 0, linewidth=0, facecolor= ejes[2], alpha = alfa_marker,
+                                                                        zorder=2, label = ejes[0], url = 'https://www.ncbi.nlm.nih.gov/biosample/?term='+sample_BioSample[ejes[0]]))
+
+                        if valorY < centroY:
+                            AX2.text(e+0.03, valorY, '    '+str(round(valorY, 3)), color = text_color, ha = 'center', va = 'bottom', rotation = 90, fontfamily = family1, fontsize = text_size, alpha = text_alfa)
+                        if valorY > centroY:
+                            AX2.text(e+0.03, valorY, str(round(valorY, 3))+'    ', color = text_color, ha = 'center', va = 'top', rotation = 90, fontfamily = family1, fontsize = text_size, alpha = text_alfa)
+
+
+                        ejexpos.append(e)
+                        labelx.append(ejes[0])
+
+                    AX2.set_xticks(ejexpos)
+                    AX2.set_xticklabels(labelx, rotation = 90, ha= 'center', va = 'top', fontsize = ticklabels_X, fontname=family_axis)
+
+
+                    AX2.set_xlabel('Sample', fontsize=label_X, fontname=family_axis, weight="bold")
+
+                    AX2.set_ylabel(tipo_indice, fontsize=label_Y, fontname=family_axis, weight="bold")
+
+
+                    for labejey in AX2.yaxis.get_ticklabels():
+                        labejey.set_fontsize(ticklabels_Y)
+
+
+                    for ticky in AX2.yaxis.get_major_ticks():
+                        ticky.label.set_fontfamily([family_axis])
+
+
+
+                    AX2.set_xticklabels(KITS[tipo_kits_1])
+
+                    if cambiar_sample == 'Code1':
+                        etiquetas = KITS[tipo_kits_1]
+                        AX2.set_xticklabels(etiquetas)
+                    if cambiar_sample == 'Code2':
+                        etiquetas = [name_code[i] for i in KITS[tipo_kits_1]]
+                        AX2.set_xticklabels(etiquetas)
+                    if cambiar_sample == 'Code3':
+                        etiquetas = [name_code2[i] for i in KITS[tipo_kits_1]]
+                        AX2.set_xticklabels(etiquetas)
+
+
+                    display(fig2)
+
+                set_locus()
+
+
+            out_updata_plot = widgets.interactive_output(updata_plot, {'tipo_kits_1':tipo_kits_1, 'tipo_indice':tipo_indice, 'ancho':ancho, 'alto':alto,
+                                                                      'width_linea':width_linea, 'text_size':text_size, 'linea_color':linea_color, 'alfa_linea':alfa_linea,
+                                                                       'size_point':size_point, 'markers_point':markers_point,
+                                                                       'family1':family1, 'label_X':label_X, 'ticklabels_X':ticklabels_X,
+                                                                       'label_Y':label_Y, 'ticklabels_Y':ticklabels_Y, 'family_axis':family_axis, 'text_color':text_color,
+                                                                       'text_alfa':text_alfa, 'cambiar_sample':cambiar_sample, 'alfa_marker':alfa_marker, 'Multiple_colorS':Multiple_colorS,
+                                                                       'ajustar_ejes':ajustar_ejes, 'tipo_elemento':tipo_elemento})
+
+            items_plot_1 = VBox([ancho,
+                                 alto,
+                                width_linea,
+                                alfa_linea,
+                                text_size,
+                                HBox([blanca, widgets.Label('Text font:'), family1]),
+                                text_alfa,
+                                size_point,
+                                 alfa_marker,
+                                HBox([blanca, widgets.Label('Markers:'), markers_point, widgets.Label('Line color:'), linea_color, widgets.Label('Text color:'), text_color])
+                                ])
+
+            items_plot_1_box = Box(children=[items_plot_1], layout=Layout(border='1px solid gainsboro', width='410px', height=str(int(len(items_plot_1.children) * 31))+'px'))
+
+            items_axis_1 = VBox([label_X, ticklabels_X, label_Y, ticklabels_Y, HBox([blanca, widgets.Label('Axis font:'), family_axis]), HBox([blanca, widgets.Label('Rename samples:'), cambiar_sample])])
+            items_axis_1_box = Box(children=[items_axis_1], layout=Layout(border='1px solid gainsboro', width='410px', height=str(int(len(items_axis_1.children) * 31))+'px'))
+
+            items_save_1 = VBox([HBox([widgets.HTML('<font color = grey> <b style="font-size:0.7vw">SAVE CHART: </b>'), blanca, filename_plot]),
+                                 HBox([blanca, widgets.Label('Formats:'), png1, jpeg1, svg1, pdf1])])
+            items_save_1_box = Box(children=[items_save_1], layout=Layout(border='1px solid gainsboro', width='410px', height=str(int(len(items_save_1.children) * 34))+'px'))
+
+
+
+            items_data = [widgets.HTML('<font color = grey> <b style="font-size:0.7vw">'+i+'</b>') for i in 'DATA']
+            items_axis = [widgets.HTML('<font color = grey> <b style="font-size:0.7vw">'+i+'</b>') for i in 'AXIS']
+            items_save = [widgets.HTML('<font color = white> <b style="font-size:0.7vw">'+i+'</b>') for i in 'S']
+
+
+            IndiceS = HBox([VBox([widgets.HTML('<font color = #1976d2> <b style="font-size:0.8vw">KITS</b>'), tipo_kit_1_box, #blanca,
+                                  widgets.HTML('<font color = grey> <b style="font-size:0.8vw">INDICES</b>'), tipo_indice_box,
+                                  VBox([widgets.HTML('<font color = gray> <h style="font-size:0.55vw">Adjust Y axis to min value:</h>'), ajustar_ejes])]),
+                            VBox([widgets.HTML('<font color = grey> <b style="font-size:0.8vw">VARIABLES</b>'), tipo_var_box,
+                                  widgets.HTML('<font color = grey> <b style="font-size:0.8vw">ITEMS</b>'), tipo_elemento_box]),
+                            blanca,
+
+                           VBox([widgets.HTML('<font color = grey> <i class="fa fa-cog fa-2x fa-fw"></i> <b style="font-size:0.8vw">PLOT SETTINGS</b>'),
+
+                                 HBox([Box(children =[VBox(items_data)]), items_plot_1_box]),
+
+                                 HBox([Box(children =[VBox(items_axis)]), items_axis_1_box]),
+
+                                 HBox([Box(children =[VBox(items_save)]), items_save_1_box])
+                                ]),
+                           VBox([widgets.HTML('<font color = grey> <b style="font-size:0.6vw">MARKER COLORS</b>'), Multiple_colorS, HBox([blanca, blanca, ayuda3])]), blanca, VBox([out_updata_plot])])
+
+            display(IndiceS)
+        
+        out_item_variable = widgets.interactive_output(item_variable, {'tipo_var':tipo_var})
+        
+        display(out_item_variable)
+
+                
+INDICES2_button.on_click(button_clicked)
+IND_DIV2 = VBox([INDICES2_button, INDICES2_output])
+
+
+#`````````````````````````````````````````````````````````````````````````````````````````
+#`````````````````````````````````````````````````````````````````````````````````````````
+#`````````````````````````````````````````````````````````````````````````````````````````
 
 
 
@@ -9084,6 +9544,7 @@ BETA_DIVERSITY_PHYL = VBox([HBox([BETA_PHY_button, estatico_fil_box]), BETA_PHY_
 
 graficas = {'Rarefaction': RARE_ANALYSIS,
             'Alpha Diversity': DIVERSITY_CALCULATIONS,
+            'Alpha Diversity Split': IND_DIV2,
             'Richness': RICHNESS_CALCULATIONS,
             'Richness Split':RICHNESS2_CALCULATIONS,
             'Taxonomy': TAXONOMY_ANALYSIS,
