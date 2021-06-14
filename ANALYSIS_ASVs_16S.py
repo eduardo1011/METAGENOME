@@ -2697,16 +2697,16 @@ def button_clicked(b):
 
 
 
-                    AX2.set_xticklabels(KITS[tipo_kits_1])
+                    AX2.set_xticklabels(ejeX_new)
 
                     if cambiar_sample == 'Code1':
-                        etiquetas = KITS[tipo_kits_1]
+                        etiquetas = ejeX_new
                         AX2.set_xticklabels(etiquetas)
                     if cambiar_sample == 'Code2':
-                        etiquetas = [name_code[i] for i in KITS[tipo_kits_1]]
+                        etiquetas = [name_code[i] for i in ejeX_new]
                         AX2.set_xticklabels(etiquetas)
                     if cambiar_sample == 'Code3':
-                        etiquetas = [name_code2[i] for i in KITS[tipo_kits_1]]
+                        etiquetas = [name_code2[i] for i in ejeX_new]
                         AX2.set_xticklabels(etiquetas)
 
 
