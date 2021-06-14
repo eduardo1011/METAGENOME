@@ -1883,12 +1883,16 @@ def button_clicked(b):
         
         fig_size = []
         n = 2
-        for i in range(16):
+        for i in range(31):
             fig_size.append(round(n, 2))
             n += 0.2
     
-        tam_plot1 = widgets.SelectionSlider(options=fig_size,value=3,disabled=False,
-                                              description = 'Chart size:',
+        ancho = widgets.SelectionSlider(options=fig_size,value=6,disabled=False,
+                                              description = 'Chart width:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                           layout=Layout(width='400px', height='25px'))
+        alto = widgets.SelectionSlider(options=fig_size,value=4,disabled=False,
+                                              description = 'Chart heigth:',
                                         continuous_update=False,orientation='horizontal',readout=True,
                                            layout=Layout(width='400px', height='25px'))
         
@@ -1928,7 +1932,7 @@ def button_clicked(b):
         
         # puntos
 
-        size_point = widgets.SelectionSlider(options=np.round(np.linspace(0, 1, 11), 2),value=0.5,disabled=False,
+        size_point = widgets.SelectionSlider(options=np.round(np.linspace(0, 1, 51), 2),value=0.5,disabled=False,
                                               description = 'Marker size:',
                                         continuous_update=False,orientation='horizontal',readout=True,
                                             layout=Layout(width='400px', height='25px'))
@@ -2066,7 +2070,8 @@ def button_clicked(b):
                     """
                     parametros = {'Kit:':tipo_kits_1.value,
                                   'Index:':tipo_indice.value,
-                                  'Chart size:':tam_plot1.value,
+                                  'Chart width:':ancho.value,
+                                  'Chart heigth:':alto.value,
                                   'Line width:':width_linea.value,
                                   'Line alpha:':alfa_linea.value,
                                   'Text size:':text_size.value,
@@ -2089,7 +2094,7 @@ def button_clicked(b):
         params.on_click(button_clicked5)
         #------------------------------------
         
-        def updata_plot(tipo_kits_1, tipo_indice, tam_plot1, width_linea, linea_color, text_size, text_color, text_alfa, alfa_linea, size_point, markers_point, alfa_marker, family1,
+        def updata_plot(tipo_kits_1, tipo_indice, ancho, alto, width_linea, linea_color, text_size, text_color, text_alfa, alfa_linea, size_point, markers_point, alfa_marker, family1,
                         label_X, ticklabels_X, label_Y, ticklabels_Y, family_axis, cambiar_sample, Multiple_colorS, ajustar_ejes):
             def set_locus():
                 
@@ -2137,7 +2142,7 @@ def button_clicked(b):
                 
                 
                 
-                fig2.set_size_inches((tam_plot1 * fig_per, tam_plot1)) # size plot
+                fig2.set_size_inches((ancho, alto)) # size plot
                 
                 AX2.clear()
                 AX2 = fig2.add_axes([0, 0, 1, 1])
@@ -2154,11 +2159,11 @@ def button_clicked(b):
                 AX2.add_line(line)
                 
                 width_f = size_point
-                factor1 = (tam_plot1*fig_per)/tam_plot1 # determina un primer factor a partir de las dimensiones del grafico x/y
-                factor2 = (AX2.get_ylim()[1] - AX2.get_ylim()[0])/AX2.get_xlim()[1] # determina un factor a partir de los limites de los ejes 'X' y 'Y'
-                factor3 = width_f*factor1*factor2 # producto de los factores mas el ancho o radio de las figuras
+                factor1 = abs(AX2.get_xlim()[0]) + AX2.get_xlim()[1]
+                factor2 = width_f/factor1
+                factor3 = ((AX2.get_ylim()[1] - AX2.get_ylim()[0])*factor2)*(ancho/alto)
                 
-                centroY = (AX2.get_ylim()[1] - AX2.get_ylim()[0]) / 2
+                centroY = ((AX2.get_ylim()[1] - AX2.get_ylim()[0]) / 2) + AX2.get_ylim()[0]
                 
                 ejexpos = []
                 labelx = []
@@ -2220,7 +2225,7 @@ def button_clicked(b):
             set_locus()
             
             
-        out_updata_plot = widgets.interactive_output(updata_plot, {'tipo_kits_1':tipo_kits_1, 'tipo_indice':tipo_indice, 'tam_plot1':tam_plot1,
+        out_updata_plot = widgets.interactive_output(updata_plot, {'tipo_kits_1':tipo_kits_1, 'tipo_indice':tipo_indice, 'ancho':ancho, 'alto':alto,
                                                                   'width_linea':width_linea, 'text_size':text_size, 'linea_color':linea_color, 'alfa_linea':alfa_linea,
                                                                    'size_point':size_point, 'markers_point':markers_point,
                                                                    'family1':family1, 'label_X':label_X, 'ticklabels_X':ticklabels_X,
@@ -2231,7 +2236,8 @@ def button_clicked(b):
         
         
         
-        items_plot_1 = VBox([tam_plot1,
+        items_plot_1 = VBox([ancho,
+                            alto,
                             width_linea,
                             alfa_linea,
                             text_size,
