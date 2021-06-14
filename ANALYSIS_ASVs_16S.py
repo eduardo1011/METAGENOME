@@ -2370,7 +2370,7 @@ def button_clicked(b):
                 permitidos.append(j)
                 
         #variable fija
-        tipo_var = widgets.ToggleButtons(options= permitidos, value = permitidos[0], button_style = 'warning')
+        tipo_var = widgets.ToggleButtons(options= permitidos, value = permitidos[0], button_style = 'danger')
         tipo_var.style.button_width = '170px'
         cuenta = 31 * len(permitidos)
         tipo_var_box = Box(children=[VBox([tipo_var])], layout=Layout(border='1px solid #ff9800', width='180px', height= str(cuenta)+'px'))
@@ -2558,15 +2558,32 @@ def button_clicked(b):
         pdf1.on_click(button_clicked4)
         
         
-        def item_variable(tipo_var):
+        def item_variable(tipo_kits_1, tipo_var):
             
-            tipo_elemento = widgets.ToggleButtons(options= variables_items_ordened[tipo_var], value = variables_items_ordened[tipo_var][0], button_style = '')
-            tipo_elemento.style.button_width = '170px'
-            cuenta = 32 * len(variables_items_ordened[tipo_var])
-            tipo_elemento_box = Box(children=[VBox([tipo_elemento])], layout=Layout(border='1px solid white', width='180px', height= str(cuenta)+'px'))
+            if tipo_var == 'Genomic DNA kit':
+                if tipo_kits_1 == 'Both kits':
+                    tipo_elemento = widgets.ToggleButtons(options=variables_items_ordened[tipo_var], value = variables_items_ordened[tipo_var][0], button_style = 'danger')
+                    tipo_elemento.style.button_width = '170px'
+                    cuenta = 32 * len(variables_items_ordened[tipo_var])
+                    tipo_elemento_box = Box(children=[VBox([tipo_elemento])], layout=Layout(border='1px solid white', width='180px', height= str(cuenta)+'px'))
+                if tipo_kits_1 == 'DNPowerSoil':
+                    tipo_elemento = widgets.ToggleButtons(options= ['DNPowerSoil'], value = 'DNPowerSoil', button_style = 'danger')
+                    tipo_elemento.style.button_width = '170px'
+                    cuenta = 32 * len(['DNPowerSoil'])
+                    tipo_elemento_box = Box(children=[VBox([tipo_elemento])], layout=Layout(border='1px solid white', width='180px', height= str(cuenta)+'px'))
+                if tipo_kits_1 == 'DNMicrobial':
+                    tipo_elemento = widgets.ToggleButtons(options= ['DNMicrobial'], value = 'DNMicrobial', button_style = 'danger')
+                    tipo_elemento.style.button_width = '170px'
+                    cuenta = 32 * len(['DNMicrobial'])
+                    tipo_elemento_box = Box(children=[VBox([tipo_elemento])], layout=Layout(border='1px solid white', width='180px', height= str(cuenta)+'px'))   
+            else:
+                tipo_elemento = widgets.ToggleButtons(options=variables_items_ordened[tipo_var], value = variables_items_ordened[tipo_var][0], button_style = 'danger')
+                tipo_elemento.style.button_width = '170px'
+                cuenta = 32 * len(variables_items_ordened[tipo_var])
+                tipo_elemento_box = Box(children=[VBox([tipo_elemento])], layout=Layout(border='1px solid white', width='180px', height= str(cuenta)+'px'))
  
         
-            def updata_plot(tipo_kits_1, tipo_indice, ancho, alto, width_linea, linea_color, text_size, text_color, text_alfa, alfa_linea, size_point, markers_point, alfa_marker, family1,
+            def updata_plot(tipo_indice, ancho, alto, width_linea, linea_color, text_size, text_color, text_alfa, alfa_linea, size_point, markers_point, alfa_marker, family1,
                             label_X, ticklabels_X, label_Y, ticklabels_Y, family_axis, cambiar_sample, Multiple_colorS, ajustar_ejes, tipo_elemento):
 
                 
@@ -2698,7 +2715,7 @@ def button_clicked(b):
                 set_locus()
 
 
-            out_updata_plot = widgets.interactive_output(updata_plot, {'tipo_kits_1':tipo_kits_1, 'tipo_indice':tipo_indice, 'ancho':ancho, 'alto':alto,
+            out_updata_plot = widgets.interactive_output(updata_plot, {'tipo_indice':tipo_indice, 'ancho':ancho, 'alto':alto,
                                                                       'width_linea':width_linea, 'text_size':text_size, 'linea_color':linea_color, 'alfa_linea':alfa_linea,
                                                                        'size_point':size_point, 'markers_point':markers_point,
                                                                        'family1':family1, 'label_X':label_X, 'ticklabels_X':ticklabels_X,
@@ -2753,7 +2770,7 @@ def button_clicked(b):
 
             display(IndiceS)
         
-        out_item_variable = widgets.interactive_output(item_variable, {'tipo_var':tipo_var})
+        out_item_variable = widgets.interactive_output(item_variable, {'tipo_kits_1':tipo_kits_1, 'tipo_var':tipo_var})
         
         display(out_item_variable)
 
