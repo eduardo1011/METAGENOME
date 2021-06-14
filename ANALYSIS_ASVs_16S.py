@@ -201,6 +201,22 @@ variables = list(reversed(list(dict(OrderedDict(Counter({i : len(i) for i in var
 
 
 
+"""
+este diccionari contiene cada variable y dentro los elementos ordenados ya sea por orden alfabetico o numerico
+"""
+min_max_variables = []
+variables_items_ordened = {}
+for i in variables:
+    df = metadata[i].unique()
+    min_max_variables.append(len(df))
+    ListA = df.tolist()
+    #---
+    try:
+        ListA.sort(key=float)
+    except ValueError:
+        ListA.sort(key=str)
+    variables_items_ordened[i] = ListA
+
 
 correspondencia_sam_vars = {}
 for i, row in metadata[['Name Sample'] + variables].iterrows():
@@ -2772,36 +2788,6 @@ import itertools
 colores = {}
 for q in qualitative_colors:
     colores[q] = [matplotlib.colors.to_hex(i) for i in plt.get_cmap(q)(np.arange(qualitative_colors[q]))]
-
-
-
-
-
-
-
-
-
-
-
-"""
-este diccionari contiene cada variable y dentro los elementos ordenados ya sea por orden alfabetico o numerico
-"""
-min_max_variables = []
-variables_items_ordened = {}
-for i in variables:
-    df = metadata[i].unique()
-    min_max_variables.append(len(df))
-    ListA = df.tolist()
-    #---
-    try:
-        ListA.sort(key=float)
-    except ValueError:
-        ListA.sort(key=str)
-    variables_items_ordened[i] = ListA
-
-
-
-
 
 
 
