@@ -9694,6 +9694,7 @@ BETA_DIVERSITY_PHYL = VBox([HBox([BETA_PHY_button, estatico_fil_box]), BETA_PHY_
 
 graficas = {'Rarefaction': RARE_ANALYSIS,
             'Alpha Diversity': DIVERSITY_CALCULATIONS,
+            'Alpha Diversity Split': IND_DIV2,
             'Richness': RICHNESS_CALCULATIONS,
             'Richness Split':RICHNESS2_CALCULATIONS,
             'Taxonomy': TAXONOMY_ANALYSIS,
