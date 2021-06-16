@@ -581,10 +581,37 @@ def box1(tipo_bd):
     ############################
     
     conteo_inicial = VBox([widgets.HTML('<font color = grey> <b style="font-size:0.6vw">OTUs : '+str(len(set(ASV_Full_Taxonomy.Entry.unique())))+'</b>'),
-                           widgets.HTML('<font color = grey> <b style="font-size:0.6vw">Genus : '+str(len(set(ASV_Full_Taxonomy.Genus.unique())))+'</b>'),
-                           widgets.HTML('<font color = grey> <b style="font-size:0.6vw">Species : '+str(len(set(ASV_Full_Taxonomy.Species.unique())))+'</b>')])
+                        widgets.HTML('<font color = grey> <b style="font-size:0.6vw">Genus : '+str(len(set(ASV_Full_Taxonomy.Genus.unique())))+'</b>'),
+                        widgets.HTML('<font color = grey> <b style="font-size:0.6vw">Species : '+str(len(set(ASV_Full_Taxonomy.Species.unique())))+'</b>')])
     conteo_inicial_box = Box(children=[conteo_inicial], layout=Layout(display='flex', flex_flow='column', align_items='stretch', border='1px solid grey',
-                                                                      width='120px', height=str(int(len(conteo_inicial.children) * 34))+'px'))
+                                                                    width='120px', height=str(int(len(conteo_inicial.children) * 34))+'px'))
+    conteo_inicial_box = VBox([widgets.HTML('<font color = black> <b style="font-size:0.6vw">Both Kits</b>'), conteo_inicial_box])
+
+    #####################
+
+    DNPowerSoil_filtrados = {i : ASV_Full_Taxonomy[['Entry', 'Species', 'Genus', i]].values[ASV_Full_Taxonomy[['Entry', i]].values[:, 1] > 0] for i in DNPowerSoil}
+    DNPowerSoil_frames = [DataFrame(DNPowerSoil_filtrados[i].tolist(), columns = ['Entry', 'Species', 'Genus', i]) for i in DNPowerSoil_filtrados]
+    DNPowerSoil_conteo = reduce(lambda  left,right: pd.merge(left, right, on = ['Entry', 'Species', 'Genus'], how = 'outer'), DNPowerSoil_frames).fillna(float(0))
+
+    DNPowerSoil_conteo_inicial = VBox([widgets.HTML('<font color = grey> <b style="font-size:0.6vw">OTUs : '+str(len(set(DNPowerSoil_conteo.Entry.unique())))+'</b>'),
+                        widgets.HTML('<font color = grey> <b style="font-size:0.6vw">Genus : '+str(len(set(DNPowerSoil_conteo.Genus.unique())))+'</b>'),
+                        widgets.HTML('<font color = grey> <b style="font-size:0.6vw">Species : '+str(len(set(DNPowerSoil_conteo.Species.unique())))+'</b>')])
+    DNPowerSoil_conteo_inicial_box = Box(children=[DNPowerSoil_conteo_inicial], layout=Layout(display='flex', flex_flow='column', align_items='stretch', border='1px solid grey',
+                                                                    width='120px', height=str(int(len(DNPowerSoil_conteo_inicial.children) * 34))+'px'))
+    DNPowerSoil_conteo_inicial_box = VBox([widgets.HTML('<font color = black> <b style="font-size:0.6vw">DNPowerSoil</b>'), DNPowerSoil_conteo_inicial_box])
+
+    #####################
+
+    DNMicrobial_filtrados = {i : ASV_Full_Taxonomy[['Entry', 'Species', 'Genus', i]].values[ASV_Full_Taxonomy[['Entry', i]].values[:, 1] > 0] for i in DNMicrobial}
+    DNMicrobial_frames = [DataFrame(DNMicrobial_filtrados[i].tolist(), columns = ['Entry', 'Species', 'Genus', i]) for i in DNMicrobial_filtrados]
+    DNMicrobial_conteo = reduce(lambda  left,right: pd.merge(left, right, on = ['Entry', 'Species', 'Genus'], how = 'outer'), DNMicrobial_frames).fillna(float(0))
+
+    DNMicrobial_conteo_inicial = VBox([widgets.HTML('<font color = grey> <b style="font-size:0.6vw">OTUs : '+str(len(set(DNMicrobial_conteo.Entry.unique())))+'</b>'),
+                        widgets.HTML('<font color = grey> <b style="font-size:0.6vw">Genus : '+str(len(set(DNMicrobial_conteo.Genus.unique())))+'</b>'),
+                        widgets.HTML('<font color = grey> <b style="font-size:0.6vw">Species : '+str(len(set(DNMicrobial_conteo.Species.unique())))+'</b>')])
+    DNMicrobial_conteo_inicial_box = Box(children=[DNMicrobial_conteo_inicial], layout=Layout(display='flex', flex_flow='column', align_items='stretch', border='1px solid grey',
+                                                                    width='120px', height=str(int(len(DNMicrobial_conteo_inicial.children) * 34))+'px'))
+    DNMicrobial_conteo_inicial_box = VBox([widgets.HTML('<font color = black> <b style="font-size:0.6vw">DNMicrobial</b>'), DNMicrobial_conteo_inicial_box])
     
     
     
@@ -615,13 +642,40 @@ def box1(tipo_bd):
         procesar_button.style.font_weight = 'bold'
         procesar_output = widgets.Output()
 
-
-        resultado = VBox([widgets.HTML('<b style="font-size:0.6vw">OTUs : '+str(len(set(NCBI_RDP_SILVA_SUMMARY.Entry.unique())))+'</b>'),
-                           widgets.HTML('<b style="font-size:0.6vw">Genus : '+str(len(set(NCBI_RDP_SILVA_SUMMARY.Genus.unique())))+'</b>'),
-                          widgets.HTML('<b style="font-size:0.6vw">Species : '+str(len(set(NCBI_RDP_SILVA_SUMMARY.Species.unique())))+'</b>')
-                           ])
+        resultado = VBox([widgets.HTML('<b style="font-size:0.6vw">ASVs: '+str(len(set(NCBI_RDP_SILVA_SUMMARY.Entry.unique())))+'</b>'),
+                        widgets.HTML('<b style="font-size:0.6vw">Genus: '+str(len(set(NCBI_RDP_SILVA_SUMMARY.Genus.unique())))+'</b>'),
+                        widgets.HTML('<b style="font-size:0.6vw">Species: '+str(len(set(NCBI_RDP_SILVA_SUMMARY.Species.unique())))+'</b>')
+                        ])
         resultado_box = Box(children=[resultado], layout=Layout(display='flex', flex_flow='column', align_items='stretch', border='3px solid limegreen',
                                                                 width='120px', height=str(int(len(conteo_inicial.children) * 34))+'px'))
+        resultado_box = VBox([widgets.HTML('<font color = black> <b style="font-size:0.6vw">Both Kits</b>'), resultado_box])
+        
+        
+        #####################
+
+        DNPowerSoil_filtrados_mod = {i : NCBI_RDP_SILVA_SUMMARY[['Entry', 'Species', 'Genus', i]].values[NCBI_RDP_SILVA_SUMMARY[['Entry', i]].values[:, 1] > 0] for i in DNPowerSoil}
+        DNPowerSoil_frames_mod = [DataFrame(DNPowerSoil_filtrados_mod[i].tolist(), columns = ['Entry', 'Species', 'Genus', i]) for i in DNPowerSoil_filtrados_mod]
+        DNPowerSoil_conteo_mod = reduce(lambda  left,right: pd.merge(left, right, on = ['Entry', 'Species', 'Genus'], how = 'outer'), DNPowerSoil_frames_mod).fillna(float(0))
+
+        DNPowerSoil_conteo_inicial_mod = VBox([widgets.HTML('<font color = black> <b style="font-size:0.6vw">ASVs : '+str(len(set(DNPowerSoil_conteo_mod.Entry.unique())))+'</b>'),
+                            widgets.HTML('<font color = black> <b style="font-size:0.6vw">Genus : '+str(len(set(DNPowerSoil_conteo_mod.Genus.unique())))+'</b>'),
+                            widgets.HTML('<font color = black> <b style="font-size:0.6vw">Species : '+str(len(set(DNPowerSoil_conteo_mod.Species.unique())))+'</b>')])
+        DNPowerSoil_conteo_inicial_box_mod = Box(children=[DNPowerSoil_conteo_inicial_mod], layout=Layout(display='flex', flex_flow='column', align_items='stretch', border='3px solid limegreen',
+                                                                        width='120px', height=str(int(len(DNPowerSoil_conteo_inicial_mod.children) * 34))+'px'))
+        DNPowerSoil_conteo_inicial_box_mod = VBox([widgets.HTML('<font color = black> <b style="font-size:0.6vw">DNPowerSoil</b>'), DNPowerSoil_conteo_inicial_box_mod])
+
+        #####################
+
+        DNMicrobial_filtrados_mod = {i : NCBI_RDP_SILVA_SUMMARY[['Entry', 'Species', 'Genus', i]].values[NCBI_RDP_SILVA_SUMMARY[['Entry', i]].values[:, 1] > 0] for i in DNMicrobial}
+        DNMicrobial_frames_mod = [DataFrame(DNMicrobial_filtrados_mod[i].tolist(), columns = ['Entry', 'Species', 'Genus', i]) for i in DNMicrobial_filtrados_mod]
+        DNMicrobial_conteo_mod = reduce(lambda  left,right: pd.merge(left, right, on = ['Entry', 'Species', 'Genus'], how = 'outer'), DNMicrobial_frames_mod).fillna(float(0))
+
+        DNMicrobial_conteo_inicial_mod = VBox([widgets.HTML('<font color = black> <b style="font-size:0.6vw">ASVs : '+str(len(set(DNMicrobial_conteo_mod.Entry.unique())))+'</b>'),
+                            widgets.HTML('<font color = black> <b style="font-size:0.6vw">Genus : '+str(len(set(DNMicrobial_conteo_mod.Genus.unique())))+'</b>'),
+                            widgets.HTML('<font color = black> <b style="font-size:0.6vw">Species : '+str(len(set(DNMicrobial_conteo_mod.Species.unique())))+'</b>')])
+        DNMicrobial_conteo_inicial_box_mod = Box(children=[DNMicrobial_conteo_inicial_mod], layout=Layout(display='flex', flex_flow='column', align_items='stretch', border='3px solid limegreen',
+                                                                        width='120px', height=str(int(len(DNMicrobial_conteo_inicial_mod.children) * 34))+'px'))
+        DNMicrobial_conteo_inicial_box_mod = VBox([widgets.HTML('<font color = black> <b style="font-size:0.6vw">DNMicrobial</b>'), DNMicrobial_conteo_inicial_box_mod])
 
 
 
@@ -630,7 +684,7 @@ def box1(tipo_bd):
 
         #display(HBox([pro, blanca, resultado_box]))
 
-        display(HBox([conteo_inicial_box, blanca, resultado_box, blanca, ayuda0, VBox([procesar_button, procesar_output])]))
+        display(HBox([HBox([conteo_inicial_box, DNPowerSoil_conteo_inicial_box, DNMicrobial_conteo_inicial_box]), blanca, HBox([resultado_box, DNPowerSoil_conteo_inicial_box_mod, DNMicrobial_conteo_inicial_box_mod]), blanca, ayuda0, VBox([procesar_button, procesar_output])]))
 
 
 
@@ -694,7 +748,7 @@ OUT1 = widgets.interactive_output(box1, {'tipo_bd':tipo_bd})
 
 
 
-threshold = HBox([HBox([VBox([widgets.HTML('<font color = grey><b style="font-size:0.8vw">SELECT A DATABASE: </b>'), progress]), tipo_bd_box]),
+threshold = HBox([HBox([VBox([widgets.HTML('<font color = grey><b style="font-size:0.8vw">DATABASE: </b>'), progress]), tipo_bd_box]),
                   blanca, widgets.HTML('<font color = black> <i class="fa fa-filter fa-2x" aria-hidden="true"></i> <h style="font-size:0.7vw">Taxonomic threshold:</h>'),
                   VBox([umbral_tax_genus, umbral_tax_specie, limite_reads]), OUT1])
 
@@ -5806,7 +5860,21 @@ def button_clicked(b):
         varia_text = widgets.SelectionSlider(options=np.arange(5, 12.5, 0.5).tolist(),value=6.5,disabled=False,
                                               description = 'Variable text:', continuous_update=False,orientation='horizontal',readout=True,
                                             layout=Layout(width='400px', height='25px'))
-        
+        alfa_varia_text = widgets.SelectionSlider(options=np.round(np.linspace(0, 1, 11), 2),value=1,disabled=False,
+                                              description = 'Var. alpha:',
+                                        continuous_update=False,orientation='horizontal',readout=True,
+                                           layout=Layout(width='400px', height='25px'))
+
+
+        varia_leyenda_text = widgets.SelectionSlider(options=np.arange(2, 12.5, 0.5).tolist(),value=6.5,disabled=False,
+                                              description = 'Legend size:', continuous_update=False,orientation='horizontal',readout=True,
+                                            layout=Layout(width='400px', height='25px'))
+
+        tax_leyenda_text = widgets.SelectionSlider(options=np.arange(2, 12.5, 0.5).tolist(),value=6.5,disabled=False,
+                                              description = 'Tax size:', continuous_update=False,orientation='horizontal',readout=True,
+                                            layout=Layout(width='400px', height='25px'))
+
+
         ancho_dendo = widgets.SelectionSlider(options=[0.05, 0.075, 0.1, 0.11, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17, 0.18, 0.19, 0.2],value= 0.15,disabled=False,
                                               description = 'Dendrogram width:', continuous_update=False,orientation='horizontal',readout=True,
                                             layout=Layout(width='400px', height='25px'))
@@ -5912,11 +5980,23 @@ def button_clicked(b):
         filename = widgets.Text(value='', placeholder='File name.txt', description='', disabled=False, layout = Layout(width='195px', height='25px'))
         
         filename_plot = widgets.Text(value='', placeholder='Chart name', description='', disabled=False, layout = Layout(width='270px', height='25px'))
+        
+        
+        intervalosY = []
+        n = 0
+        for i in range(26):
+            intervalosY.append(round(n, 2))
+            n += 0.02
+        
+        Y_pos_leyendaS = widgets.SelectionSlider(options=intervalosY, value= 0.04,disabled=False,
+                                                      description = 'Interval:', continuous_update=False,orientation='horizontal',readout=True,
+                                                    layout=Layout(width='400px', height='25px'))
+        
         ######
         
         
         def TaxonomY(tipo_kits_1, tax, PercentagE, METODO, METRICA, para_mostrar, Multiple_colorS, tam_plot1, width_linea, Variables_metadatA, family_axis, displacement_leye,
-                    num_cols, SalidA0, SalidA1, SalidA2, SalidA3, SalidA4, SalidA5, SalidA6, sample_text, varia_text, ancho_dendo, cambiar_sample):
+                    num_cols, SalidA0, SalidA1, SalidA2, SalidA3, SalidA4, SalidA5, SalidA6, sample_text, varia_text, alfa_varia_text, varia_leyenda_text,ancho_dendo, cambiar_sample, tax_leyenda_text, Y_pos_leyendaS):
             
             #uno.value = '<i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i> <font color = black>  <h style="font-size:0.6vw"> Processing.</font>'
             uno.value = '<i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i>'
@@ -6119,7 +6199,7 @@ def button_clicked(b):
                 #----------------------------
                 bbox_X, bbox_Y = despazamiento[displacement_leye], 1.053 # bbox_X, bbox_Y = 1.45, 1.055
                 x_pos_leyendas, y_pos_leyendas = -1.04, 0
-                y_pos_leyendas_intervalo = 0.035
+                y_pos_leyendas_intervalo = Y_pos_leyendaS
                 #------    sizes   ----------
                 xlabel = sample_text+1
                 label_25_75_100 = sample_text
@@ -6149,7 +6229,7 @@ def button_clicked(b):
                 #----------------------------
                 bbox_X, bbox_Y = despazamiento[displacement_leye] * 1.07, 1.1 # 1.565, 1.11
                 x_pos_leyendas, y_pos_leyendas = -1.67,  -0.02
-                y_pos_leyendas_intervalo = 0.065
+                y_pos_leyendas_intervalo = Y_pos_leyendaS
                 #------    sizes   ----------
                 xlabel = sample_text+1
                 label_25_75_100 = sample_text
@@ -6178,7 +6258,7 @@ def button_clicked(b):
                 #----------------------------
                 bbox_X, bbox_Y = despazamiento[displacement_leye] * 1.07, 1.1# 1.565, 1.11
                 x_pos_leyendas, y_pos_leyendas = -1.67,  -0.02
-                y_pos_leyendas_intervalo = 0.065
+                y_pos_leyendas_intervalo = Y_pos_leyendaS
                 #------    sizes   ----------
                 xlabel = sample_text+1
                 label_25_75_100 = sample_text
@@ -6300,9 +6380,9 @@ def button_clicked(b):
                                          markeredgecolor=colors2[cat], linewidth = 0)
                 proxies.append(proxy)
 
-            ax1.legend(proxies, list(colors2.keys()), title= "$\\bf{"+tax+"}$", title_fontsize = texttitle_size, numpoints=1, loc=2, ncol = num_cols,
+            ax1.legend(proxies, list(colors2.keys()), title= "$\\bf{"+tax+"}$", title_fontsize = tax_leyenda_text + 1, numpoints=1, loc=2, ncol = num_cols,
                       handletextpad=0.7, handlelength = 0.3, labelspacing = 0.5, columnspacing = 1,
-                               borderpad = 0.5, edgecolor="none", prop={'style':'italic', 'size': label_legend1},
+                               borderpad = 0.5, edgecolor="none", prop={'style':'italic', 'size': tax_leyenda_text},
                               bbox_to_anchor=(bbox_X, bbox_Y))
 
             ax1.xaxis.set_ticks_position("top")
@@ -6360,7 +6440,7 @@ def button_clicked(b):
                     num += (radio*2.2)
 
             for VaR in pos_variable_title:
-                ax2.text(pos_variable_title[VaR], 100, ' '+VaR, fontsize = text_variables, color = 'black', ha='center', va = 'bottom', rotation=90, fontfamily = family_axis) 
+                ax2.text(pos_variable_title[VaR], 100, ' '+VaR, fontsize = text_variables, color = 'black', ha='center', va = 'bottom', rotation=90, fontfamily = family_axis, alpha = alfa_varia_text) 
 
 
             for sam in centros_circles:
@@ -6411,7 +6491,7 @@ def button_clicked(b):
 
                 leg = ax2.legend(proxies, labels, title_fontsize = 8, numpoints=1, loc=2, ncol = len(labels), facecolor = 'none',
                           handletextpad=0.7, handlelength = 0.3, labelspacing = 0, columnspacing = 1.5,
-                                   borderpad = 0.13, edgecolor="none", prop={'size':label_legend2},
+                                   borderpad = 0.13, edgecolor="none", prop={'size':varia_leyenda_text},
                                   bbox_to_anchor=(x_pos_leyendas, ly)) 
 
                 leyendas.append(leg)
@@ -6603,24 +6683,28 @@ def button_clicked(b):
             #uno.value = '<i class="fa fa-spinner fa-2x fa-fw"></i> <font color = black>  <h style="font-size:0.6vw"> Finishied.</font>'
             uno.value = '<i class="fa fa-spinner fa-2x fa-fw"></i>'
 
-        OUT_TaxonomY = widgets.interactive_output(TaxonomY, {'tipo_kits_1':tipo_kits_1, 'tax':tax, 'PercentagE':PercentagE,
+        OUT_TaxonomY = widgets.interactive_output(TaxonomY, {'tipo_kits_1':tipo_kits_1, 'tax':tax, 'PercentagE':PercentagE, 'tax_leyenda_text':tax_leyenda_text,
                                                              'tam_plot1':tam_plot1, 'width_linea':width_linea, 'METODO':METODO, 'METRICA':METRICA,
                                                              'Variables_metadatA':Variables_metadatA, 'Multiple_colorS':Multiple_colorS, 'para_mostrar':para_mostrar,
                                                              'family_axis':family_axis, 'displacement_leye':displacement_leye, 'num_cols':num_cols, 'SalidA0':SalidA0,
                                                              'SalidA1':SalidA1, 'SalidA2':SalidA2, 'SalidA3':SalidA3, 'SalidA4':SalidA4, 'SalidA5':SalidA5, 'SalidA6':SalidA6,
-                                                             'varia_text':varia_text, 'sample_text':sample_text, 'ancho_dendo':ancho_dendo, 'cambiar_sample':cambiar_sample}) 
+                                                             'varia_text':varia_text, 'alfa_varia_text':alfa_varia_text, 'varia_leyenda_text':varia_leyenda_text, 'sample_text':sample_text, 'ancho_dendo':ancho_dendo, 'cambiar_sample':cambiar_sample, 'Y_pos_leyendaS':Y_pos_leyendaS}) 
         
         items_plot = VBox([HBox([blanca, widgets.Label('Method:'), METODO]),
                                 HBox([blanca, widgets.Label('Metric:'), METRICA]),
                                 HBox([blanca, widgets.Label('Show:'), para_mostrar]),
                               tam_plot1,
-                                width_linea,
                            sample_text,
                            varia_text,
+                           alfa_varia_text,
                                HBox([blanca, widgets.Label('Axis font:'), family_axis]),
+                               tax_leyenda_text,
                                displacement_leye,
+                               varia_leyenda_text,
+                               Y_pos_leyendaS,
                                HBox([blanca, widgets.Label('Columns:'), num_cols]),
                            HBox([widgets.Label('Rename sample:'), cambiar_sample]),
+                           width_linea,
                           ancho_dendo])
         items_plot_box = Box(children=[items_plot], layout=Layout(border='1px solid gainsboro', width='410px', height=str(int(len(items_plot.children) * 31))+'px'))
         
@@ -9746,7 +9830,7 @@ RESULTS_16S = VBox([Box(children = [HBox([widgets.HTML('<b style="font-size:0.9v
 
 
 
-threshold_box = Box(children=[VBox([blanca2, threshold])], layout=Layout(border='5px solid beige', width='1900px', height='150px'))
+threshold_box = Box(children=[VBox([blanca2, threshold])], layout=Layout(border='5px solid beige', width='2000px', height='170px'))
 
 
 
