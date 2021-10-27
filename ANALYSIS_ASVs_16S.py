@@ -30,8 +30,10 @@ from matplotlib.colors import to_rgba_array, to_rgba, to_hex, to_rgb
 
 import matplotlib.font_manager
 
+import urllib.request
+urllib.request.urlretrieve('https://raw.githubusercontent.com/eduardo1011/METAGENOME/main/METADATA.txt', 'METADATA.txt')
 
-
+urllib.request.urlretrieve('https://raw.githubusercontent.com/eduardo1011/METAGENOME/main/SraRunTable.txt', 'SraRunTable.txt')
 # formatos de imagen= eps, jpeg, jpg, pdf, pgf, png, ps, raw, rgba, svg, svgz, tif, tiff
 
 
@@ -4693,10 +4695,10 @@ def chord_plot():
 
                 ##### ug OTA/kg
                 if 'ug OTA/kg' in list(dict_variable_element_colors.keys()):
-                    sour0, mitad22, etiquetapos0, mitad11 = source1(radio = var_radios['ug OTA/kg'], theta1 = teta11, theta2 = teta22,
+                    sour0, mitad22, etiquetapos, mitad11 = source1(radio = var_radios['ug OTA/kg'], theta1 = teta11, theta2 = teta22,
                                                             width = radio2*(ancho2/100), sep = sepp2, color = dict_variable_element_colors['ug OTA/kg'][correspondencia_sam_vars[o]['ug OTA/kg']])
                     ax.add_patch(sour0)
-                    ETIQUETAS = etiquetapos0
+                    ETIQUETAS = etiquetapos
 
                     if o == destinos[0]:
                         MITADES = [mitad11, mitad22]
@@ -4705,10 +4707,10 @@ def chord_plot():
 
                 ##### Cultivation
                 if 'Cultivation' in list(dict_variable_element_colors.keys()):
-                    sour00, mitad222, etiquetapos00, mitad111 = source1(radio = var_radios['Cultivation'], theta1 = teta11, theta2 = teta22,
+                    sour00, mitad222, etiquetapos, mitad111 = source1(radio = var_radios['Cultivation'], theta1 = teta11, theta2 = teta22,
                                                             width = radio2*(ancho2/100), sep = sepp2, color = dict_variable_element_colors['Cultivation'][correspondencia_sam_vars[o]['Cultivation']])
                     ax.add_patch(sour00)
-                    ETIQUETAS = etiquetapos00
+                    ETIQUETAS = etiquetapos
 
                     if o == destinos[0]:
                         MITADES = [mitad111, mitad222]
@@ -4716,10 +4718,10 @@ def chord_plot():
 
                 ##### Coffee Variety
                 if 'Coffee Variety' in list(dict_variable_element_colors.keys()):
-                    sour000, mitad2222, etiquetapos000, mitad1111 = source1(radio = var_radios['Coffee Variety'], theta1 = teta11, theta2 = teta22,
+                    sour000, mitad2222, etiquetapos, mitad1111 = source1(radio = var_radios['Coffee Variety'], theta1 = teta11, theta2 = teta22,
                                                             width = radio2*(ancho2/100), sep = sepp2, color = dict_variable_element_colors['Coffee Variety'][correspondencia_sam_vars[o]['Coffee Variety']])
                     ax.add_patch(sour000)
-                    ETIQUETAS = etiquetapos000
+                    ETIQUETAS = etiquetapos
 
                     if o == destinos[0]:
                         MITADES = [mitad1111, mitad2222]
@@ -4727,10 +4729,10 @@ def chord_plot():
 
                 ##### Genomic DNA kit
                 if 'Genomic DNA kit' in list(dict_variable_element_colors.keys()):
-                    sour0000, mitad22222, etiquetapos0000, mitad11111 = source1(radio = var_radios['Genomic DNA kit'], theta1 = teta11, theta2 = teta22,
+                    sour0000, mitad22222, etiquetapos, mitad11111 = source1(radio = var_radios['Genomic DNA kit'], theta1 = teta11, theta2 = teta22,
                                                             width = radio2*(ancho2/100), sep = sepp2, color = dict_variable_element_colors['Genomic DNA kit'][correspondencia_sam_vars[o]['Genomic DNA kit']])
                     ax.add_patch(sour0000)
-                    ETIQUETAS = etiquetapos0000
+                    ETIQUETAS = etiquetapos
 
                     if o == destinos[0]:
                         MITADES = [mitad11111, mitad22222]
@@ -4739,10 +4741,10 @@ def chord_plot():
 
                 ##### Drying Time (Days)
                 if 'Drying Time (Days)' in list(dict_variable_element_colors.keys()):
-                    sour00000, mitad222222, etiquetapos00000, mitad111111 = source1(radio = var_radios['Drying Time (Days)'], theta1 = teta11, theta2 = teta22,
+                    sour00000, mitad222222, etiquetapos, mitad111111 = source1(radio = var_radios['Drying Time (Days)'], theta1 = teta11, theta2 = teta22,
                                                             width = radio2*(ancho2/100), sep = sepp2, color = dict_variable_element_colors['Drying Time (Days)'][correspondencia_sam_vars[o]['Drying Time (Days)']])
                     ax.add_patch(sour00000)
-                    ETIQUETAS = etiquetapos00000
+                    ETIQUETAS = etiquetapos
 
                     if o == destinos[0]:
                         MITADES = [mitad111111, mitad222222]
@@ -4750,10 +4752,10 @@ def chord_plot():
 
                 ##### Postharvest Processing
                 if 'Postharvest Processing' in list(dict_variable_element_colors.keys()):
-                    sour000000, mitad2222222, etiquetapos000000, mitad1111111 = source1(radio = var_radios['Postharvest Processing'], theta1 = teta11, theta2 = teta22,
+                    sour000000, mitad2222222, etiquetapos, mitad1111111 = source1(radio = var_radios['Postharvest Processing'], theta1 = teta11, theta2 = teta22,
                                                             width = radio2*(ancho2/100), sep = sepp2, color = dict_variable_element_colors['Postharvest Processing'][correspondencia_sam_vars[o]['Postharvest Processing']])
                     ax.add_patch(sour000000)
-                    ETIQUETAS = etiquetapos000000
+                    ETIQUETAS = etiquetapos
 
                     if o == destinos[0]:
                         MITADES = [mitad1111111, mitad2222222]
@@ -5452,10 +5454,10 @@ def chord_plot():
 
             ##### ug OTA/kg
             if 'ug OTA/kg' in list(dict_variable_element_colors.keys()):
-                sour0, mitad22, etiquetapos0, mitad11 = source1(radio = var_radios['ug OTA/kg'], theta1 = teta11, theta2 = teta22,
+                sour0, mitad22, etiquetapos, mitad11 = source1(radio = var_radios['ug OTA/kg'], theta1 = teta11, theta2 = teta22,
                                                          width = radio2*(ancho2/100), sep = sepp2, color = dict_variable_element_colors['ug OTA/kg'][correspondencia_sam_vars[o]['ug OTA/kg']])
                 ax.add_patch(sour0)
-                ETIQUETAS = etiquetapos0
+                ETIQUETAS = etiquetapos
 
                 if o == destinos[0]:
                     MITADES = [mitad11, mitad22]
@@ -5464,10 +5466,10 @@ def chord_plot():
 
             ##### Cultivation
             if 'Cultivation' in list(dict_variable_element_colors.keys()):
-                sour00, mitad222, etiquetapos00, mitad111 = source1(radio = var_radios['Cultivation'], theta1 = teta11, theta2 = teta22,
+                sour00, mitad222, etiquetapos, mitad111 = source1(radio = var_radios['Cultivation'], theta1 = teta11, theta2 = teta22,
                                                          width = radio2*(ancho2/100), sep = sepp2, color = dict_variable_element_colors['Cultivation'][correspondencia_sam_vars[o]['Cultivation']])
                 ax.add_patch(sour00)
-                ETIQUETAS = etiquetapos00
+                ETIQUETAS = etiquetapos
 
                 if o == destinos[0]:
                     MITADES = [mitad111, mitad222]
@@ -5475,10 +5477,10 @@ def chord_plot():
 
             ##### Coffee Variety
             if 'Coffee Variety' in list(dict_variable_element_colors.keys()):
-                sour000, mitad2222, etiquetapos000, mitad1111 = source1(radio = var_radios['Coffee Variety'], theta1 = teta11, theta2 = teta22,
+                sour000, mitad2222, etiquetapos, mitad1111 = source1(radio = var_radios['Coffee Variety'], theta1 = teta11, theta2 = teta22,
                                                          width = radio2*(ancho2/100), sep = sepp2, color = dict_variable_element_colors['Coffee Variety'][correspondencia_sam_vars[o]['Coffee Variety']])
                 ax.add_patch(sour000)
-                ETIQUETAS = etiquetapos000
+                ETIQUETAS = etiquetapos
 
                 if o == destinos[0]:
                     MITADES = [mitad1111, mitad2222]
@@ -5486,10 +5488,10 @@ def chord_plot():
 
             ##### Genomic DNA kit
             if 'Genomic DNA kit' in list(dict_variable_element_colors.keys()):
-                sour0000, mitad22222, etiquetapos0000, mitad11111 = source1(radio = var_radios['Genomic DNA kit'], theta1 = teta11, theta2 = teta22,
+                sour0000, mitad22222, etiquetapos, mitad11111 = source1(radio = var_radios['Genomic DNA kit'], theta1 = teta11, theta2 = teta22,
                                                          width = radio2*(ancho2/100), sep = sepp2, color = dict_variable_element_colors['Genomic DNA kit'][correspondencia_sam_vars[o]['Genomic DNA kit']])
                 ax.add_patch(sour0000)
-                ETIQUETAS = etiquetapos0000
+                ETIQUETAS = etiquetapos
 
                 if o == destinos[0]:
                     MITADES = [mitad11111, mitad22222]
@@ -5498,10 +5500,10 @@ def chord_plot():
 
             ##### Drying Time (Days)
             if 'Drying Time (Days)' in list(dict_variable_element_colors.keys()):
-                sour00000, mitad222222, etiquetapos00000, mitad111111 = source1(radio = var_radios['Drying Time (Days)'], theta1 = teta11, theta2 = teta22,
+                sour00000, mitad222222, etiquetapos, mitad111111 = source1(radio = var_radios['Drying Time (Days)'], theta1 = teta11, theta2 = teta22,
                                                          width = radio2*(ancho2/100), sep = sepp2, color = dict_variable_element_colors['Drying Time (Days)'][correspondencia_sam_vars[o]['Drying Time (Days)']])
                 ax.add_patch(sour00000)
-                ETIQUETAS = etiquetapos00000
+                ETIQUETAS = etiquetapos
 
                 if o == destinos[0]:
                     MITADES = [mitad111111, mitad222222]
@@ -5509,10 +5511,10 @@ def chord_plot():
 
             ##### Postharvest Processing
             if 'Postharvest Processing' in list(dict_variable_element_colors.keys()):
-                sour000000, mitad2222222, etiquetapos000000, mitad1111111 = source1(radio = var_radios['Postharvest Processing'], theta1 = teta11, theta2 = teta22,
+                sour000000, mitad2222222, etiquetapos, mitad1111111 = source1(radio = var_radios['Postharvest Processing'], theta1 = teta11, theta2 = teta22,
                                                          width = radio2*(ancho2/100), sep = sepp2, color = dict_variable_element_colors['Postharvest Processing'][correspondencia_sam_vars[o]['Postharvest Processing']])
                 ax.add_patch(sour000000)
-                ETIQUETAS = etiquetapos000000
+                ETIQUETAS = etiquetapos
 
                 if o == destinos[0]:
                     MITADES = [mitad1111111, mitad2222222]
