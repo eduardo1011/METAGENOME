@@ -1,0 +1,53 @@
+Name Sample	Code	Code2	Coffee Variety	Cultivation	Postharvest Processing	Genomic DNA kit	Drying Time (Days)	ug OTA/kg	Location	Localization
+Coffee_16S_01	01_RCF.0	RCF.0_01	Robusta	Conventional	Fresh Cherry	DNPowerSoil	0	1.25	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_16S_17	17_RCF.0	RCF.0_17	Robusta	Conventional	Fresh Cherry	DNMicrobial	0	1.25	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_16S_02	02_RCD.3	RCD.3_02	Robusta	Conventional	Dry	DNPowerSoil	3	0.7	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_16S_18	18_RCD.3	RCD.3_18	Robusta	Conventional	Dry	DNMicrobial	3	0.7	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_16S_03	03_RCD.8	RCD.8_03	Robusta	Conventional	Dry	DNPowerSoil	8	0.74	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_16S_19	19_RCD.8	RCD.8_19	Robusta	Conventional	Dry	DNMicrobial	8	0.74	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_16S_04	04_RCD.10	RCD.10_04	Robusta	Conventional	Dry	DNPowerSoil	10	3.11	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_16S_20	20_RCD.10	RCD.10_20	Robusta	Conventional	Dry	DNMicrobial	10	3.11	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_ITS_01	01_RCF.0	RCF.0_01	Robusta	Conventional	Fresh Cherry	DNPowerSoil	0	1.25	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_ITS_17	17_RCF.0	RCF.0_17	Robusta	Conventional	Fresh Cherry	DNMicrobial	0	1.25	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_ITS_02	02_RCD.3	RCD.3_02	Robusta	Conventional	Dry	DNPowerSoil	3	0.7	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_ITS_18	18_RCD.3	RCD.3_18	Robusta	Conventional	Dry	DNMicrobial	3	0.7	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_ITS_03	03_RCD.8	RCD.8_03	Robusta	Conventional	Dry	DNPowerSoil	8	0.74	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_ITS_19	19_RCD.8	RCD.8_19	Robusta	Conventional	Dry	DNMicrobial	8	0.74	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_ITS_04	04_RCD.10	RCD.10_04	Robusta	Conventional	Dry	DNPowerSoil	10	3.11	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_ITS_20	20_RCD.10	RCD.10_20	Robusta	Conventional	Dry	DNMicrobial	10	3.11	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_16S_05	05_ACF.0	ACF.0_05	Arabica	Conventional	Fresh Cherry	DNPowerSoil	0	0.86	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_16S_21	21_ACF.0	ACF.0_21	Arabica	Conventional	Fresh Cherry	DNMicrobial	0	0.86	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_16S_06	06_ACD.6	ACD.6_06	Arabica	Conventional	Dry	DNPowerSoil	6	0.7	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_16S_22	22_ACD.6	ACD.6_22	Arabica	Conventional	Dry	DNMicrobial	6	0.7	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_16S_07	07_ACD.15	ACD.15_07	Arabica	Conventional	Dry	DNPowerSoil	15	15.83	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_16S_23	23_ACD.15	ACD.15_23	Arabica	Conventional	Dry	DNMicrobial	15	15.83	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_ITS_05	05_ACF.0	ACF.0_05	Arabica	Conventional	Fresh Cherry	DNPowerSoil	0	0.86	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_ITS_21	21_ACF.0	ACF.0_21	Arabica	Conventional	Fresh Cherry	DNMicrobial	0	0.86	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_ITS_06	06_ACD.6	ACD.6_06	Arabica	Conventional	Dry	DNPowerSoil	6	0.7	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_ITS_22	22_ACD.6	ACD.6_22	Arabica	Conventional	Dry	DNMicrobial	6	0.7	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_ITS_07	07_ACD.15	ACD.15_07	Arabica	Conventional	Dry	DNPowerSoil	15	15.83	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_ITS_23	23_ACD.15	ACD.15_23	Arabica	Conventional	Dry	DNMicrobial	15	15.83	Sto. D. mpio. U. Jrz.	Santo Domingo, Mpio. Union Juarez
+Coffee_16S_08	08_AOF.0	AOF.0_08	Arabica	Organic	Fresh Cherry	DNPowerSoil	0	3.19	Cruz R. mpio. M.	Cruz del Rosario Mpio. de las Margaritas
+Coffee_16S_14	14_AOF.0	AOF.0_14	Arabica	Organic	Fresh Cherry	DNMicrobial	0	3.19	Cruz R. mpio. M.	Cruz del Rosario Mpio. de las Margaritas
+Coffee_16S_09	09_AOW.3	AOW.3_09	Arabica	Organic	Wet	DNPowerSoil	3	0.64	Cruz R. mpio. M.	Cruz del Rosario Mpio. de las Margaritas
+Coffee_16S_15	15_AOW.3	AOW.3_15	Arabica	Organic	Wet	DNMicrobial	3	0.64	Cruz R. mpio. M.	Cruz del Rosario Mpio. de las Margaritas
+Coffee_16S_10	10_AOW.7	AOW.7_10	Arabica	Organic	Wet	DNPowerSoil	7	0.0	Cruz R. mpio. M.	Cruz del Rosario Mpio. de las Margaritas
+Coffee_16S_16	16_AOW.7	AOW.7_16	Arabica	Organic	Wet	DNMicrobial	7	0.0	Cruz R. mpio. M.	Cruz del Rosario Mpio. de las Margaritas
+Coffee_ITS_08	08_AOF.0	AOF.0_08	Arabica	Organic	Fresh Cherry	DNPowerSoil	0	3.19	Cruz R. mpio. M.	Cruz del Rosario Mpio. de las Margaritas
+Coffee_ITS_14	14_AOF.0	AOF.0_14	Arabica	Organic	Fresh Cherry	DNMicrobial	0	3.19	Cruz R. mpio. M.	Cruz del Rosario Mpio. de las Margaritas
+Coffee_ITS_09	09_AOW.3	AOW.3_09	Arabica	Organic	Wet	DNPowerSoil	3	0.64	Cruz R. mpio. M.	Cruz del Rosario Mpio. de las Margaritas
+Coffee_ITS_15	15_AOW.3	AOW.3_15	Arabica	Organic	Wet	DNMicrobial	3	0.64	Cruz R. mpio. M.	Cruz del Rosario Mpio. de las Margaritas
+Coffee_ITS_10	10_AOW.7	AOW.7_10	Arabica	Organic	Wet	DNPowerSoil	7	0.0	Cruz R. mpio. M.	Cruz del Rosario Mpio. de las Margaritas
+Coffee_ITS_16	16_AOW.7	AOW.7_16	Arabica	Organic	Wet	DNMicrobial	7	0.0	Cruz R. mpio. M.	Cruz del Rosario Mpio. de las Margaritas
+Coffee_16S_11	11_ACF.0	ACF.0_11	Arabica	Conventional	Fresh Cherry	DNPowerSoil	0	0.73	O. Agua mpio. I.	Ojo de Agua Mpio. de la Independencia
+Coffee_16S_24	24_ACF.0	ACF.0_24	Arabica	Conventional	Fresh Cherry	DNMicrobial	0	0.73	O. Agua mpio. I.	Ojo de Agua Mpio. de la Independencia
+Coffee_16S_12	12_ACW.3	ACW.3_12	Arabica	Conventional	Wet	DNPowerSoil	3	0.0	O. Agua mpio. I.	Ojo de Agua Mpio. de la Independencia
+Coffee_16S_25	25_ACW.3	ACW.3_25	Arabica	Conventional	Wet	DNMicrobial	3	0.0	O. Agua mpio. I.	Ojo de Agua Mpio. de la Independencia
+Coffee_16S_13	13_ACW.7	ACW.7_13	Arabica	Conventional	Wet	DNPowerSoil	7	0.59	O. Agua mpio. I.	Ojo de Agua Mpio. de la Independencia
+Coffee_16S_26	26_ACW.7	ACW.7_26	Arabica	Conventional	Wet	DNMicrobial	7	0.59	O. Agua mpio. I.	Ojo de Agua Mpio. de la Independencia
+Coffee_ITS_11	11_ACF.0	ACF.0_11	Arabica	Conventional	Fresh Cherry	DNPowerSoil	0	0.73	O. Agua mpio. I.	Ojo de Agua Mpio. de la Independencia
+Coffee_ITS_24	24_ACF.0	ACF.0_24	Arabica	Conventional	Fresh Cherry	DNMicrobial	0	0.73	O. Agua mpio. I.	Ojo de Agua Mpio. de la Independencia
+Coffee_ITS_12	12_ACW.3	ACW.3_12	Arabica	Conventional	Wet	DNPowerSoil	3	0.0	O. Agua mpio. I.	Ojo de Agua Mpio. de la Independencia
+Coffee_ITS_25	25_ACW.3	ACW.3_25	Arabica	Conventional	Wet	DNMicrobial	3	0.0	O. Agua mpio. I.	Ojo de Agua Mpio. de la Independencia
+Coffee_ITS_13	13_ACW.7	ACW.7_13	Arabica	Conventional	Wet	DNPowerSoil	7	0.59	O. Agua mpio. I.	Ojo de Agua Mpio. de la Independencia
+Coffee_ITS_26	26_ACW.7	ACW.7_26	Arabica	Conventional	Wet	DNMicrobial	7	0.59	O. Agua mpio. I.	Ojo de Agua Mpio. de la Independencia
