@@ -157,12 +157,9 @@ category_names = ['Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Genus', 'Spe
 
 metadata = pd.read_csv('METADATA.txt', sep = '\t')
 metadata = metadata.astype('str')
-metadata = DataFrame(pd.read_csv('clustering/ASV_counts.txt', sep = '\t').iloc[:, 1:].columns.tolist(), columns = ['Name Sample']).merge(metadata)
+metadata = metadata[metadata['Name Sample'].str.contains('16S') == False]
+metadata = metadata[metadata['Name Sample'].str.contains('Coffee_ITS_14|Coffee_ITS_24') == False]
 metadata = metadata.sort_values(by =['Name Sample'],ascending=True).reset_index(drop=True)
-
-
-
-
 
 
 
@@ -2633,16 +2630,16 @@ def button_clicked(b):
 
 
 
-                    AX2.set_xticklabels(KITS[tipo_kits_1])
+                    AX2.set_xticklabels(ejeX_new)
 
                     if cambiar_sample == 'Code1':
-                        etiquetas = KITS[tipo_kits_1]
+                        etiquetas = ejeX_new
                         AX2.set_xticklabels(etiquetas)
                     if cambiar_sample == 'Code2':
-                        etiquetas = [name_code[i] for i in KITS[tipo_kits_1]]
+                        etiquetas = [name_code[i] for i in ejeX_new]
                         AX2.set_xticklabels(etiquetas)
                     if cambiar_sample == 'Code3':
-                        etiquetas = [name_code2[i] for i in KITS[tipo_kits_1]]
+                        etiquetas = [name_code2[i] for i in ejeX_new]
                         AX2.set_xticklabels(etiquetas)
 
 
