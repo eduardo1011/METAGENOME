@@ -1481,7 +1481,7 @@ ayuda1 = HBox([help1_button, help1_button_output])
 
 
 alfa_filo_button = widgets.Button(description="RUN: Philogenetic diversity", icon = 'fa-play', layout=Layout(width='230px'))
-alfa_filo_button.style.button_color = 'beige'
+alfa_filo_button.style.button_color = '#f5f5dc'
 alfa_filo_button.style.font_weight = 'bold'
 alfa_filo_output = widgets.Output()
 
@@ -1823,7 +1823,7 @@ def CHAO_1(entrada = list(), taxa = int()):
 
 
 indices_button = widgets.Button(description="RUN: Diversity calculations", icon = 'fa-play', layout=Layout(width='230px'))
-indices_button.style.button_color = 'beige'
+indices_button.style.button_color = '#f5f5dc'
 indices_button.style.font_weight = 'bold'
 indices_button_output = widgets.Output()
 
@@ -9798,7 +9798,7 @@ RESULTS_16S = VBox([Box(children = [HBox([widgets.HTML('<b style="font-size:0.9v
 
 
 
-threshold_box = Box(children=[VBox([blanca2, threshold])], layout=Layout(border='5px solid beige', width='2000px', height='170px'))
+threshold_box = Box(children=[VBox([blanca2, threshold])], layout=Layout(border='5px solid #f5f5dc', width='2000px', height='170px'))
 
 
 
