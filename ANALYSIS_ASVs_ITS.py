@@ -6176,7 +6176,7 @@ def button_clicked(b):
                     ax0.add_collection(colors_to_collections[above_threshold_color])
 
             for e, i in enumerate(ax0.collections):
-                i.set_color(Set1[e])
+                i.set_color(tab20[e])
                 
             ax0.yaxis.set_visible(False)
 
@@ -7749,7 +7749,7 @@ def button_clicked(b):
                                     ax0.add_collection(colors_to_collections[above_threshold_color])
 
                             for e, i in enumerate(ax0.collections):
-                                i.set_color(Set1[e])
+                                i.set_color(tab20[e])
 
                             ax0.text(0, ivw + (ivw*0.05), 'Clustering', fontsize=10, ha='left', va = 'center', weight = 'bold')
 
@@ -7989,7 +7989,7 @@ def button_clicked(b):
                                     ax0.add_collection(colors_to_collections[above_threshold_color])
 
                             for e, i in enumerate(ax0.collections):
-                                i.set_color(Set1[e])
+                                i.set_color(tab20[e])
 
                             ax0.text(0, ivw + (ivw*0.05), 'Clustering', fontsize=10, ha='left', va = 'center', weight = 'bold')
                             
@@ -8983,7 +8983,7 @@ def button_clicked(b):
                                     ax0.add_collection(colors_to_collections[above_threshold_color])
 
                             for e, i in enumerate(ax0.collections):
-                                i.set_color(Set1[e])
+                                i.set_color(tab20[e])
 
                             ax0.text(0, ivw + (ivw*0.05), 'Clustering', fontsize=10, ha='left', va = 'center', weight = 'bold')
 
@@ -9221,7 +9221,7 @@ def button_clicked(b):
                                     ax0.add_collection(colors_to_collections[above_threshold_color])
 
                             for e, i in enumerate(ax0.collections):
-                                i.set_color(Set1[e])
+                                i.set_color(tab20[e])
 
                             ax0.text(0, ivw + (ivw*0.05), 'Clustering', fontsize=10, ha='left', va = 'center', weight = 'bold')
                             
